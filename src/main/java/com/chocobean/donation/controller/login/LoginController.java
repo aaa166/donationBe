@@ -1,8 +1,11 @@
 package com.chocobean.donation.controller.login;
 
+import com.chocobean.donation.dto.SignUpForm;
 import com.chocobean.donation.dto.UserLogin;
+import com.chocobean.donation.service.SignUpService;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +15,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class LoginController {
-    private UserRepository userRepository;
     private final UserService userService;
-
-
-    @Autowired
-    public LoginController(UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
-        this.userService = userService;
-    }
+    private final SignUpService signUpService;
+//    @Autowired
+//    private UserService userService;
+//
+//    @Autowired
+//    private SignUpService signUpService;
 
 
     @GetMapping("/login")
@@ -50,6 +52,20 @@ public class LoginController {
             response.put("message", "아이디 또는 비밀번호가 일치하지 않습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> login(@RequestBody SignUpForm signUpForm) {
+        System.out.println(signUpForm);
+        try {
+            signUpService.processSignUp(signUpForm);
+
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+
+        return ResponseEntity.ok().build();
     }
 
 
