@@ -1,6 +1,7 @@
 package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.SignUpForm;
+import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,26 @@ public class SignUpService {
         }
     }
 
+    public void insertUser(SignUpForm signUpForm) {
+        User user = new User();
+//        SignUpForm user = new SignUpForm();
+        user.setUserName(signUpForm.getUserName());
+        user.setUserId(signUpForm.getUserId());
+        user.setUserPassword(signUpForm.getUserPassword());
+        user.setUserEmail(signUpForm.getUserEmail());
+        user.setUserPhone(signUpForm.getUserPhone());
+        userRepository.save(user);
+
+    }
+
+
+
+
+
+
+
+
+
     private boolean validation(SignUpForm signUpForm) {
         if (signUpForm.getUserId()==null
                 || signUpForm.getUserId().isEmpty()
@@ -47,4 +68,6 @@ public class SignUpService {
         if (userRepository.existsByUserId(id))  return false;
         return true;
     }
+
+
 }

@@ -60,6 +60,8 @@ public class LoginController {
         try {
             signUpService.processSignUp(signUpForm);
 
+            signUpService.insertUser(signUpForm);
+
         }catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
