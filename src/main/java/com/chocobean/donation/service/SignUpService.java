@@ -1,7 +1,6 @@
 package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.SignUpForm;
-import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +31,14 @@ public class SignUpService {
     }
 
     public void insertUser(SignUpForm signUpForm) {
-        User user = new User();
+        com.chocobean.donation.entity.User user = new com.chocobean.donation.entity.User();
 //        SignUpForm user = new SignUpForm();
         user.setUserName(signUpForm.getUserName());
         user.setUserId(signUpForm.getUserId());
         user.setUserPassword(signUpForm.getUserPassword());
         user.setUserEmail(signUpForm.getUserEmail());
         user.setUserPhone(signUpForm.getUserPhone());
-        userRepository.save(user);
+        this.userRepository.save(user);
 
     }
 
