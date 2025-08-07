@@ -24,6 +24,9 @@ public class Donation {
     @Column(nullable = false)
     private int donationInstitutionCode; //기관코드
 
+    @Column(nullable = false, length = 100)
+    private String donationOrganization; //기관명
+
     @Column(nullable = false)
     private String donationTarget;
     @Column(nullable = false)
@@ -37,7 +40,14 @@ public class Donation {
 
     private LocalDateTime donationCreateDate = LocalDateTime.now();
     private LocalDateTime donationDeadlineDate;
+    @Column(nullable = false)
+    private String donationImg;
 
+    @ElementCollection
     private int[] donationCode;
+
+
+
+
 
 }
