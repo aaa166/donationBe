@@ -12,7 +12,13 @@ import java.util.List;
 public interface DonationRepository extends JpaRepository<com.chocobean.donation.entity.Donation, Long> {
     @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, " +
             "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), " +
-            "d.donationCurrentAmount, d.donationImg) " +
+            "d.donationCurrentAmount, d.donationImg, d.donationDeadlineDate) " +
             "FROM Donation d")
     List<DonationList> findDonationSummaries();
+
+    @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, " +
+            "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), " +
+            "d.donationCurrentAmount, d.donationImg, d.donationDeadlineDate) " +
+            "FROM Donation d ORDER BY d.donationDeadlineDate ASC")
+    List<DonationList> findAllByOrderByDonationDeadlineDateAsc();
 }
