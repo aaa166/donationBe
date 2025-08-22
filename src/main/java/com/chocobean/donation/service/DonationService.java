@@ -16,4 +16,8 @@ public class DonationService {
     public List<DonationList> getDonations() {
         return donationRepository.findDonationSummaries();
     }
+
+    public List<DonationList> getDonationsOrderByDonationDeadlineDateAsc() {
+        return donationRepository.findAllByOrderByDonationDeadlineDateAsc();
+    }
 }

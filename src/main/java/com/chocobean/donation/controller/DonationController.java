@@ -21,4 +21,8 @@ public class DonationController {
     public List<DonationList> getDonations() {
         return donationService.getDonations();
     }
+    @GetMapping("/donationsDate")
+    public List<DonationList> getDonationsDate() {
+        return donationService.getDonationsOrderByDonationDeadlineDateAsc();
+    }
 }

@@ -2,6 +2,8 @@ package com.chocobean.donation.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,6 +15,9 @@ public class DonationList {
     private int progress;
     private long amount;
     private String image;
+    private LocalDateTime donationDeadlineDate;
+
+
 
 
 }
