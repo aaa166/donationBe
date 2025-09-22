@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,7 +45,12 @@ public class Donation {
     private String donationImg;
 
     @ElementCollection
-    private int[] donationCode;
+    @CollectionTable(
+            name = "donation_category",
+            joinColumns = @JoinColumn(name = "donation_no")
+    )
+    @Column(name = "category_code")
+    private List<Integer> donationCode;
 
 
 
