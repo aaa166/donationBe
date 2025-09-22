@@ -1,20 +1,28 @@
 package com.chocobean.donation.repository;
 
 import com.chocobean.donation.dto.DonationList;
-import com.chocobean.donation.entity.Donation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface DonationRepository extends JpaRepository<com.chocobean.donation.entity.Donation, Long> {
-    @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, " +
-            "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), " +
-            "d.donationCurrentAmount, d.donationImg, d.donationDeadlineDate) " +
-            "FROM Donation d")
+    @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, "
+            + "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), "
+            + "d.donationCurrentAmount, d.donationImg, d.donationDeadlineDate) "
+            + "FROM Donation d")
     List<DonationList> findDonationSummaries();
+
+
+    @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, "
+            + "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), "
+            + "d.donationCurrentAmount, d.donationImg, d.donationDeadlineDate) "
+            + "FROM Donation d JOIN d.donationCode dc " // "Donation 엔티티의 donationCode 필드를 조인하라"는 의미
+            + "WHERE dc = :code")
+    List<DonationList> findDonationSummariesByDonationCode(@Param("code") Integer code);
 
     @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, " +
             "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), " +
