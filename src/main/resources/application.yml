@@ -1,5 +1,8 @@
 server:
   port: 8081
+jwt:
+  secret: 'your-very-long-and-secure-secret-key-that-is-at-least-256-bits' # ✅ 토큰 서명을 위한 비밀키 (매우 중요, 길고 복잡하게 만드세요)
+  expiration: 3600000 # ⏳ 토큰 만료 시간 (밀리초 단위, 예: 1시간)
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/chocobean
