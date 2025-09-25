@@ -20,7 +20,7 @@ public interface DonationRepository extends JpaRepository<com.chocobean.donation
     @Query("SELECT new com.chocobean.donation.dto.DonationList(d.donationTitle, d.donationOrganization, "
             + "CAST((d.donationCurrentAmount * 100.0 / d.donationGoalAmount) AS int), "
             + "d.donationCurrentAmount, d.donationImg, d.donationDeadlineDate) "
-            + "FROM Donation d JOIN d.donationCode dc " // "Donation 엔티티의 donationCode 필드를 조인하라"는 의미
+            + "FROM Donation d JOIN d.donationCode dc "
             + "WHERE dc = :code")
     List<DonationList> findDonationSummariesByDonationCode(@Param("code") Integer code);
 

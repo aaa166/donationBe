@@ -1,7 +1,6 @@
 package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.DonationList;
-import com.chocobean.donation.entity.Donation;
 import com.chocobean.donation.service.DonationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +17,11 @@ public class DonationController {
 
     private final DonationService donationService;
 
-    @GetMapping("/donations")
+    @GetMapping("/public/donations")
     public List<DonationList> getDonations(@RequestParam(defaultValue = "0") Integer code) {
         return donationService.getDonations(code);
     }
-    @GetMapping("/donationsDate")
+    @GetMapping("/public/donationsDate")
     public List<DonationList> getDonationsDate() {
         return donationService.getDonationsOrderByDonationDeadlineDateAsc();
     }
