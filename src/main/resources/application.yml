@@ -1,20 +1,23 @@
 server:
   port: 8081
+
 jwt:
-  secret: 'your-very-long-and-secure-secret-key-that-is-at-least-256-bits' # ✅ 토큰 서명을 위한 비밀키 (매우 중요, 길고 복잡하게 만드세요)
-  expiration: 3600000 # ⏳ 토큰 만료 시간 (밀리초 단위, 예: 1시간)
+  # 🔑 Base64로 인코딩된 비밀키 (아래 예시 키를 사용하거나 새로 생성)
+  secret: 'eW91ci12ZXJ5LWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3Qtc2FtcGxl'
+  expiration: 3600000 # 1시간 (밀리초)
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/chocobean
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+#        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    open-in-view: false
