@@ -3,6 +3,7 @@ package com.chocobean.donation.controller;
 import com.chocobean.donation.dto.JwtResponse;
 import com.chocobean.donation.dto.SignUpForm;
 import com.chocobean.donation.dto.UserLogin;
+import com.chocobean.donation.dto.UserResponse;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -55,5 +57,15 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/mypage")
+    public ResponseEntity<UserResponse> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        // userDetails에서 사용자 ID(PK가 아닌 로그인 ID)를 가져옵니다.
+        String userId = userDetails.getUsername();
+
+        // 서비스 레이어를 통해 사용자 정보를 DTO로 받아옵니다.
+        UserResponse userInfo = userService.getUserInfoByUserId(userId);
+
+        return ResponseEntity.ok(userInfo);
+    }
 
 }

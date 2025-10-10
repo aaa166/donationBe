@@ -1,6 +1,7 @@
 package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.SignUpForm;
+import com.chocobean.donation.dto.UserResponse;
 import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,13 @@ public class UserService {
         user.setUserPhone(signUpForm.getUserPhone());
 
         return userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse getUserInfoByUserId(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. ID: " + userId));
+
+        return new UserResponse(user);
     }
 }

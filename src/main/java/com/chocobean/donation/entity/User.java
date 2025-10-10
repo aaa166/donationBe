@@ -1,11 +1,13 @@
 package com.chocobean.donation.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
+@Entity
 @Getter
 @Setter
-@Entity
 @Table(name = "user")
 public class User {
 
@@ -27,4 +29,8 @@ public class User {
 
     @Column(nullable = false)
     private String userPhone;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private String totalAmount;
 }
