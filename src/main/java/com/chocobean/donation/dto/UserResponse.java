@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UserResponse {
+    private Long userNo;
     private String userName;
     private String userId;
     private String userEmail;
@@ -15,6 +16,7 @@ public class UserResponse {
 
     // Entity를 DTO로 변환하는 생성자
     public UserResponse(User user) {
+        this.userNo = user.getUserNo();
         this.userName = user.getUserName();
         this.userId = user.getUserId();
         this.userEmail = user.getUserEmail();
