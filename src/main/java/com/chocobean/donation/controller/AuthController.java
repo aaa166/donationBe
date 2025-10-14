@@ -1,9 +1,6 @@
 package com.chocobean.donation.controller;
 
-import com.chocobean.donation.dto.JwtResponse;
-import com.chocobean.donation.dto.SignUpForm;
-import com.chocobean.donation.dto.UserLogin;
-import com.chocobean.donation.dto.UserResponse;
+import com.chocobean.donation.dto.*;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -68,4 +67,12 @@ public class AuthController {
         return ResponseEntity.ok(userInfo);
     }
 
+    @GetMapping("/mydonation")
+    public ResponseEntity<List<MyDonation>> getMyPayments(@AuthenticationPrincipal UserDetails userDetails) {
+        String userId = userDetails.getUsername();
+
+        List<MyDonation> donationList = userService.getDonationListByUserId(userId);
+
+        return ResponseEntity.ok(donationList);
+    }
 }
