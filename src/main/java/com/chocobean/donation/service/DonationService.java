@@ -1,7 +1,7 @@
 package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.DonationList;
-import com.chocobean.donation.entity.Donation;
+import com.chocobean.donation.dto.DonationView;
 import com.chocobean.donation.repository.DonationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,5 +24,9 @@ public class DonationService {
 
     public List<DonationList> getDonationsOrderByDonationDeadlineDateAsc() {
         return donationRepository.findAllByOrderByDonationDeadlineDateAsc();
+    }
+
+    public List<DonationView> getDonationByNo(Long no) {
+        return  donationRepository.getDonationByNo(no);
     }
 }

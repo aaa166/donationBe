@@ -18,6 +18,9 @@ public class Payment {
     @Column(nullable = false)
     private Long payAmount;
 
+    @Column(nullable = false, length = 1000)
+    private String payComent;
+
     private LocalDateTime payDate = LocalDateTime.now();
 
 
