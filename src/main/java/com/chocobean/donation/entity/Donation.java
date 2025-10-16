@@ -20,7 +20,7 @@ public class Donation {
     @Column(nullable = false, length = 100)
     private String donationTitle;
 
-    @Column(nullable = false, length = 2000)
+    @Column(nullable = false, length = 4000)
     private String donationContent;
 
     @Column(nullable = false)

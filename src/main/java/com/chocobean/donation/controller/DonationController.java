@@ -1,12 +1,11 @@
 package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.DonationList;
+import com.chocobean.donation.dto.DonationView;
 import com.chocobean.donation.service.DonationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +23,14 @@ public class DonationController {
     @GetMapping("/public/donationsDate")
     public List<DonationList> getDonationsDate() {
         return donationService.getDonationsOrderByDonationDeadlineDateAsc();
+    }
+
+    @GetMapping("/public/donationView/{donationNo}")
+    public ResponseEntity<List<DonationView>> getDonationViewByNo(
+            @PathVariable("donationNo") Long no
+    ) {
+
+        List<DonationView> donationData = donationService.getDonationByNo(no);
+        return ResponseEntity.ok(donationData);
     }
 }
