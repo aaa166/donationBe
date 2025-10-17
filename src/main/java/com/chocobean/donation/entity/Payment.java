@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "pay")
+@Table(name = "payment")
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Payment {
     private Long payAmount;
 
     @Column(nullable = false, length = 1000)
-    private String payComent;
+    private String payComment;
 
     private LocalDateTime payDate = LocalDateTime.now();
 
