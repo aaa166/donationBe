@@ -32,12 +32,10 @@ public interface DonationRepository extends JpaRepository<com.chocobean.donation
     List<DonationList> findAllByOrderByDonationDeadlineDateAsc();
 
     @Query("SELECT new com.chocobean.donation.dto.DonationView(" +
-            "d.donationTitle, d.donationTarget, d.donationGoalAmount, d.donationCurrentAmount, " +
-            "d.donationAmountPlan, d.donationDeadlineDate, d.donationImg, u.userName, " +
-            "p.payAmount, p.payComent, p.payDate) " +
-            "FROM Pay p " +
-            "JOIN p.donation d " +
-            "JOIN p.user u " +
-            "WHERE d.donationNo = :donationNo")
-    List<DonationView> getDonationByNo(@Param("donationNo")Long no);
+            "d.donationTitle, d.donationContent, d.donationInstitutionCode, d.donationOrganization, " +
+            "d.donationTarget, d.donationTargetPeople, d.donationGoalAmount, d.donationCurrentAmount, " +
+            "d.donationAmountPlan, d.donationCreateDate, d.donationDeadlineDate, d.donationImg" +
+            ") " +
+            "FROM Donation d WHERE d.donationNo = :donationNo")
+    DonationView findDonationDetailsByDonationNo(@Param("donationNo") Long donationNo);
 }

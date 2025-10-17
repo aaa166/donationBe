@@ -11,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DonationService {
     private final DonationRepository donationRepository;
-    
+
 
 
     public List<DonationList> getDonations(int code) {
@@ -26,7 +26,7 @@ public class DonationService {
         return donationRepository.findAllByOrderByDonationDeadlineDateAsc();
     }
 
-    public List<DonationView> getDonationByNo(Long no) {
-        return  donationRepository.getDonationByNo(no);
+    public DonationView getDonationByNo(Long no) {
+        return  donationRepository.findDonationDetailsByDonationNo(no);
     }
 }

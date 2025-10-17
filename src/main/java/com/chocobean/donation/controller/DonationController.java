@@ -26,11 +26,11 @@ public class DonationController {
     }
 
     @GetMapping("/public/donationView/{donationNo}")
-    public ResponseEntity<List<DonationView>> getDonationViewByNo(
+    public ResponseEntity<DonationView> getDonationViewByNo(
             @PathVariable("donationNo") Long no
     ) {
+        DonationView donationData = donationService.getDonationByNo(no);
 
-        List<DonationView> donationData = donationService.getDonationByNo(no);
         return ResponseEntity.ok(donationData);
     }
 }
