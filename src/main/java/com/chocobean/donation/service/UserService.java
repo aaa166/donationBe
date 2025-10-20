@@ -3,8 +3,9 @@ package com.chocobean.donation.service;
 import com.chocobean.donation.dto.MyDonation;
 import com.chocobean.donation.dto.SignUpForm;
 import com.chocobean.donation.dto.UserResponse;
+import com.chocobean.donation.entity.Payment;
 import com.chocobean.donation.entity.User;
-import com.chocobean.donation.repository.PayRepository;
+import com.chocobean.donation.repository.PaymentRepository;
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final PayRepository payRepository;
+    private final PaymentRepository paymentRepository;
 
 
 
@@ -57,14 +59,23 @@ public class UserService {
         return new UserResponse(user);
     }
 
+
+    @Transactional(readOnly = true)
     public List<MyDonation> getDonationListByUserId(String userId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. ID: " + userId));
 
-        long userNo = user.getUserNo();
 
 
+        List<Payment> payments = paymentRepository.findPaymentsWithDonationByUserNo(user.getUserNo());
 
-        return payRepository.findDonationsByUserNo(userNo);
+
+        return payments.stream()
+                .map(payment -> new MyDonation(
+                        payment.getDonation().getDonationTitle(), // JOIN FETCH 덕분에 추가 쿼리 없이 접근 가능
+                        payment.getPayAmount(),
+                        payment.getPayDate()
+                ))
+                .collect(Collectors.toList());
     }
 }
