@@ -19,7 +19,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/public/donationComments/{donationNo}")
-    public ResponseEntity<List<PayComment>> getDonationViewByNo(
+    public ResponseEntity<List<PayComment>> getPayCommentsByDonationNo(
             @PathVariable("donationNo") Long no
     ) {
         List<PayComment> PayComment = paymentService.findPayCommentsByDonationNo(no);
