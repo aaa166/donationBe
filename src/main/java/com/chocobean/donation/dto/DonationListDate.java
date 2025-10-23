@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class DonationListDate {
+    private long donationNo;
     private String donationTitle;
     private String donationOrganization;
     private int donationPercentage;
