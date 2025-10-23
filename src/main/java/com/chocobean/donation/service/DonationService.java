@@ -64,6 +64,7 @@ public class DonationService {
         }
 
         return new DonationList(
+                donation.getDonationNo(),
                 donation.getDonationTitle(),
                 donation.getDonationOrganization(),
                 percentage,
