@@ -45,13 +45,13 @@ public class Donation {
     @Column(nullable = false)
     private String donationImg;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "donation_category",
-            joinColumns = @JoinColumn(name = "donation_no")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "donation_to_category",
+            joinColumns = @JoinColumn(name = "donation_no"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    @Column(name = "category_code")
-    private List<Integer> donationCode;
+    private List<DonationCategory> categories = new ArrayList<>();
 
 
 

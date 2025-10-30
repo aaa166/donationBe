@@ -1,10 +1,11 @@
 package com.chocobean.donation.dto;
 
+import com.chocobean.donation.entity.DonationCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter; // ★★★ Setter 추가
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,8 +25,7 @@ public class DonationView {
     private LocalDateTime donationDeadlineDate;
     private String donationImg;
 
-    @Setter // ★★★ List 필드에만 Setter를 추가
-    private List<Integer> donationCode;
+    private List<DonationCategory> categories = new ArrayList<>();
 
     // ★★★ JPQL에서 사용할 생성자 (List 제외) ★★★
     public DonationView(String donationTitle, String donationContent, int donationInstitutionCode,
