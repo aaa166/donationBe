@@ -17,8 +17,8 @@ public class DonationController {
     private final DonationService donationService;
 
     @GetMapping("/public/donations")
-    public List<DonationList> getDonations(@RequestParam(defaultValue = "0") Integer code) {
-        return donationService.getDonations(code);
+    public List<DonationList> getDonations(@RequestParam(defaultValue = "0") Integer categoryId) {
+        return donationService.getDonations(categoryId);
     }
     @GetMapping("/public/donationsDate")
     public List<DonationList> getDonationsDate() {

@@ -19,12 +19,12 @@ public class DonationService {
 
 
     @Transactional(readOnly = true)
-    public List<DonationList> getDonations(int code) {
+    public List<DonationList> getDonations(int categoryId) {
         List<Donation> donations;
-        if (code == 0) {
+        if (categoryId == 0) {
             donations = donationRepository.findAll();
         } else {
-            donations = donationRepository.findByDonationCode(code);
+            donations = donationRepository.findDonationsByCategoryId(categoryId);
         }
 
         // Entity 리스트를 DTO 리스트로 변환하여 반환
