@@ -5,7 +5,7 @@ jwt:
   # 🔑 Base64로 인코딩된 비밀키 (아래 예시 키를 사용하거나 새로 생성)
 #  secret: 'eW91ci12ZXJ5LWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3Qtc2FtcGxl'
   secret: 'ChocobeanDonationProjectSecretKeyForJWT20251017ThisIsVerySecure'
-  expiration: 36000000 # 1시간 (밀리초)
+  expiration: 86400000
 
 spring:
   datasource:

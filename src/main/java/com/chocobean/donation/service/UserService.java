@@ -78,4 +78,19 @@ public class UserService {
                 ))
                 .collect(Collectors.toList());
     }
+
+//    public int getRoleByUserName(String userName) {
+//        int role = userRepository.getRoleByUserName(userName);
+//
+//        return role;
+//    }
+
+    public int getRoleByUserName(String userId) {
+        User user= userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. ID: " + userId));;
+        int role = user.getUserRole();
+
+        return role;
+    }
+
 }
