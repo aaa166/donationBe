@@ -34,6 +34,9 @@ public class User {
     private String userPhone;
 
     @Column(nullable = false)
+    private int userRole;
+
+    @Column(nullable = false)
     @ColumnDefault("0")
     private int totalAmount;
 
