@@ -18,8 +18,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         // 👇👇👇 바로 여기에 로그를 추가합니다! 👇👇👇
-        System.out.println("--- UserDetailsService: loadUserByUsername 호출됨 ---");
-        System.out.println("토큰에서 추출된 ID로 사용자를 찾습니다: " + userId);
+//        System.out.println("--- UserDetailsService: loadUserByUsername 호출됨 ---");
+//        System.out.println("토큰에서 추출된 ID로 사용자를 찾습니다: " + userId);
 
         com.chocobean.donation.entity.User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> {
@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
                 });
 
-        System.out.println(userId + " 사용자를 성공적으로 찾았습니다.");
+//        System.out.println(userId + " 사용자를 성공적으로 찾았습니다.");
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUserId(),

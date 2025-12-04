@@ -2,13 +2,17 @@ package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.DonationList;
 import com.chocobean.donation.dto.DonationView;
+import com.chocobean.donation.dto.InsertDonation;
 import com.chocobean.donation.entity.Donation;
+import com.chocobean.donation.entity.DonationCategory;
+import com.chocobean.donation.repository.CategoryRepository;
 import com.chocobean.donation.repository.DonationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DonationService {
     private final DonationRepository donationRepository;
+    private final CategoryRepository categoryRepository;
 
 
     @Transactional(readOnly = true)
@@ -70,7 +75,7 @@ public class DonationService {
                 percentage,
                 donation.getDonationCurrentAmount(),
                 donation.getDonationImg(),
-                donation.getDonationDeadlineDate()
+                donation.getDonationDeadlineDate().atStartOfDay()
         );
     }
 
@@ -78,16 +83,39 @@ public class DonationService {
         return new DonationView(
                 donation.getDonationTitle(),
                 donation.getDonationContent(),
-                donation.getDonationInstitutionCode(),
                 donation.getDonationOrganization(),
                 donation.getDonationTarget(),
-                donation.getDonationTargetPeople(),
+                donation.getDonationTargetCount(),
                 donation.getDonationGoalAmount(),
                 donation.getDonationCurrentAmount(),
-                donation.getDonationAmountPlan(),
-                donation.getDonationCreateDate(),
-                donation.getDonationDeadlineDate(),
+                donation.getDonationPlan(),
+                donation.getDonationCreateDate().atStartOfDay(),
+                donation.getDonationDeadlineDate().atStartOfDay(),
                 donation.getDonationImg()
         );
     }
+    @Transactional
+    public void insertDonation(InsertDonation insertDonation, List<String> categoryNames) {
+
+        List<DonationCategory> categoryEntities = categoryRepository.findByCategoryNameIn(categoryNames);
+
+        Donation donation = new Donation();
+        donation.setDonationTitle(insertDonation.getDonationTitle());
+        donation.setDonationContent(insertDonation.getDonationContent());
+        donation.setDonationOrganization(insertDonation.getDonationOrganization());
+        donation.setDonationTarget(insertDonation.getDonationTarget());
+        donation.setDonationTargetCount(insertDonation.getDonationTargetCount());
+        donation.setDonationGoalAmount(insertDonation.getDonationGoalAmount());
+        donation.setDonationPlan(insertDonation.getDonationPlan());
+        donation.setDonationImg(insertDonation.getDonationImg());
+        donation.setDonationStatus("D");
+        donation.setDonationCreateDate(LocalDate.now());
+        donation.setDonationDeadlineDate(insertDonation.getDonationDeadlineDate());
+
+        donation.setCategories(categoryEntities);
+
+        donationRepository.save(donation);
+    }
+
+
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,27 +23,28 @@ public class Donation {
     @Column(nullable = false, length = 4000)
     private String donationContent;
 
-    @Column(nullable = false)
-    private int donationInstitutionCode; //기관코드
-
     @Column(nullable = false, length = 100)
     private String donationOrganization; //기관명
 
     @Column(nullable = false)
     private String donationTarget;
     @Column(nullable = false)
-    private int donationTargetPeople;
-
+    private int donationTargetCount;
     @Column(nullable = false)
     private int donationGoalAmount;
     private int donationCurrentAmount = 0;
     @Column(nullable = false)
-    private String donationAmountPlan;
+    private String donationPlan;
 
-    private LocalDateTime donationCreateDate = LocalDateTime.now();
-    private LocalDateTime donationDeadlineDate;
+//    private LocalDateTime donationCreateDate = LocalDateTime.now();
+    private LocalDate donationCreateDate = LocalDate.now();
+//    private LocalDateTime donationDeadlineDate;
+    private LocalDate donationDeadlineDate;
     @Column(nullable = false)
     private String donationImg;
+
+    @Column(nullable = false)
+    private String donationStatus;//    P:대기    A: 게시   D:비활성화
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
