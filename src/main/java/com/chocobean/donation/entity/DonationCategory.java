@@ -15,6 +15,6 @@ public class DonationCategory {
     private int categoryId;
 
     @Column(nullable = false, unique = true)
-    private String categoryName; // 예: "아동", "환경", "노인"
+    private String categoryName;
 
 }

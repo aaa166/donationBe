@@ -3,13 +3,21 @@ server:
 
 jwt:
   # 🔑 Base64로 인코딩된 비밀키 (아래 예시 키를 사용하거나 새로 생성)
-#  secret: 'eW91ci12ZXJ5LWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3Qtc2FtcGxl'
+  #  secret: 'eW91ci12ZXJ5LWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3Qtc2FtcGxl'
   secret: 'ChocobeanDonationProjectSecretKeyForJWT20251017ThisIsVerySecure'
   expiration: 86400000
 
 spring:
+  # 1. 서블릿(HTTP 요청/응답) 인코딩 설정 추가
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
   datasource:
-    url: jdbc:mysql://localhost:3306/chocobean
+    # 2. JDBC URL에 인코딩 및 타임존 설정 추가
+    url: jdbc:mysql://localhost:3306/chocobean?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,6 +28,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#        dialect: org.hibernate.dialect.MySQLDialect
+    #        dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
     open-in-view: false
