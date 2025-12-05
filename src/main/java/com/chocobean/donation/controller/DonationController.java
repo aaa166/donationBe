@@ -47,6 +47,10 @@ public class DonationController {
     public ResponseEntity<?> getDonationApply(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
         System.out.println("userName :"+ userName);
@@ -103,5 +107,18 @@ public class DonationController {
         return ResponseEntity.ok("ok");
     }
 
+    @GetMapping("/public/role")
+    public int getRole(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            System.out.println("null");
+            return 3;
+        }
+
+        String userName = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userName);
+        return role;
+    }
 
 }
