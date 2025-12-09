@@ -1,6 +1,7 @@
 package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.DonationList;
+import com.chocobean.donation.dto.DonationState;
 import com.chocobean.donation.dto.DonationView;
 import com.chocobean.donation.dto.InsertDonation;
 import com.chocobean.donation.entity.Donation;
@@ -108,7 +109,7 @@ public class DonationService {
         donation.setDonationGoalAmount(insertDonation.getDonationGoalAmount());
         donation.setDonationPlan(insertDonation.getDonationPlan());
         donation.setDonationImg(insertDonation.getDonationImg());
-        donation.setDonationStatus("D");
+        donation.setDonationState("D");
         donation.setDonationCreateDate(LocalDate.now());
         donation.setDonationDeadlineDate(insertDonation.getDonationDeadlineDate());
 
@@ -118,4 +119,23 @@ public class DonationService {
     }
 
 
+    public List<DonationState> getDonationState() {
+        List<Donation> donations = donationRepository.findAll();
+        System.out.println(donations.getFirst().getDonationState());
+
+        return donations.stream()
+                .map(this::convertToDonationStateDto) // 각 Entity를 DTO로 변환하는 메서드 호출
+                .collect(Collectors.toList());
+    }
+    private DonationState convertToDonationStateDto(Donation donation) {
+
+
+        return new DonationState(
+                donation.getDonationNo(),
+                donation.getDonationTitle(),
+                donation.getDonationOrganization(),
+                donation.getDonationDeadlineDate(),
+                donation.getDonationState()
+        );
+    }
 }

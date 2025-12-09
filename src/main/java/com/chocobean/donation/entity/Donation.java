@@ -44,7 +44,7 @@ public class Donation {
     private String donationImg;
 
     @Column(nullable = false)
-    private String donationStatus;//    P:대기    A: 게시   D:비활성화
+    private String donationState;//    P:대기    A: 게시   D:비활성화
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(

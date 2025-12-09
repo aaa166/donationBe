@@ -1,6 +1,7 @@
 package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.DonationList;
+import com.chocobean.donation.dto.DonationState;
 import com.chocobean.donation.dto.DonationView;
 import com.chocobean.donation.dto.InsertDonation;
 import com.chocobean.donation.service.DonationService;
@@ -53,8 +54,6 @@ public class DonationController {
 
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
-        System.out.println("userName :"+ userName);
-        System.out.println("role :"+ role);
         if (role == 1){
             return ResponseEntity.status(403).body("NO_PERMISSION");
         }else{
@@ -119,6 +118,24 @@ public class DonationController {
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
         return role;
+    }
+
+    @GetMapping("/admin/donationState")
+    public ResponseEntity<?> getDonationState(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userName = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userName);
+        List<DonationState> donationState = donationService.getDonationState();
+
+        if (role == 0){
+            return ResponseEntity.ok(donationState);
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
     }
 
 }
