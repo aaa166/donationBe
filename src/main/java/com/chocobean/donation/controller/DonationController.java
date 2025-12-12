@@ -138,4 +138,27 @@ public class DonationController {
         }
     }
 
+    @PatchMapping("/admin/updateDonationState/{donationNo}")
+    public ResponseEntity<?> updateDonationState(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("donationNo") Long no
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userName = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userName);
+
+
+
+        System.out.println(role);
+        if (role == 0){
+            boolean isVisible = donationService.getDonationStateByNo(no);
+            donationService.updateDonationState(no, isVisible);
+            return ResponseEntity.ok("ok");
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+    }
+
 }

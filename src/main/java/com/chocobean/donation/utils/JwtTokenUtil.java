@@ -52,7 +52,7 @@ public class JwtTokenUtil {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    // 토큰 만료일 추출
+    // 토큰 만료일 추출JWT_EXPIRATION_TIME
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }

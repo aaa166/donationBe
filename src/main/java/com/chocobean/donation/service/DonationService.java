@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,7 +122,6 @@ public class DonationService {
 
     public List<DonationState> getDonationState() {
         List<Donation> donations = donationRepository.findAll();
-        System.out.println(donations.getFirst().getDonationState());
 
         return donations.stream()
                 .map(this::convertToDonationStateDto) // 각 Entity를 DTO로 변환하는 메서드 호출
@@ -137,5 +137,14 @@ public class DonationService {
                 donation.getDonationDeadlineDate(),
                 donation.getDonationState()
         );
+    }
+    @Transactional
+    public void updateDonationState(Long no, boolean isVisible) {
+        if (isVisible)donationRepository.updateDonationStateByNo(no, "D");
+        else donationRepository.updateDonationStateByNo(no, "A");
+    }
+
+    public boolean getDonationStateByNo(Long no) {
+        return Objects.equals(donationRepository.getDonationStateByDonationNo(no), "A");
     }
 }
