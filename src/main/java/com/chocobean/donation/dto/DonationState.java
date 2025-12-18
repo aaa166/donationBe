@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DonationState {
-    private long donationNo;
+    private Long donationNo;
     private String donationTitle;
     private String donationOrganization;
     private LocalDate donationDeadlineDate;

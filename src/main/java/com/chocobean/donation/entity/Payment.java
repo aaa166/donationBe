@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -18,10 +18,10 @@ public class Payment {
     @Column(nullable = false)
     private Long payAmount;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 100)
     private String payComment;
 
-    private LocalDateTime payDate = LocalDateTime.now();
+    private LocalDate payDate = LocalDate.now();
 
 
     //FK

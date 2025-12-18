@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class DonationList {
-    private long donationNo;
+    private Long donationNo;
     private String title;
     private String organization;
     private int progress;
-    private long amount;
+    private Long amount;
     private String image;
     private LocalDateTime donationDeadlineDate;
 
