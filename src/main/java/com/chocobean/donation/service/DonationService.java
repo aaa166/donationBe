@@ -24,6 +24,12 @@ public class DonationService {
     private final DonationRepository donationRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional()
+    public void addAmount(Long donationNo, Long payAmount) {
+        Donation donation = donationRepository.getDonationByDonationNo(donationNo);
+        donation.setDonationCurrentAmount(donation.getDonationCurrentAmount() + payAmount);
+    }
+
 
     @Transactional(readOnly = true)
     public List<DonationList> getDonations(int categoryId) {

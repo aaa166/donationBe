@@ -31,8 +31,8 @@ public class Donation {
     @Column(nullable = false)
     private int donationTargetCount;
     @Column(nullable = false)
-    private int donationGoalAmount;
-    private int donationCurrentAmount = 0;
+    private Long donationGoalAmount;
+    private Long donationCurrentAmount = 0L;
     @Column(nullable = false)
     private String donationPlan;
 

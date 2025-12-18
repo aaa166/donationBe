@@ -19,7 +19,7 @@ public class InsertDonation {
     private String donationOrganization;
     private String donationTarget;
     private int donationTargetCount;
-    private int donationGoalAmount;
+    private Long donationGoalAmount;
     private String donationPlan;
     private String donationImg;
 //    private LocalDateTime donationDeadlineDate;

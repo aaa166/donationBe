@@ -17,8 +17,8 @@ public class DonationView {
     private String donationOrganization;
     private String donationTarget;
     private int donationTargetCount;
-    private int donationGoalAmount;
-    private int donationCurrentAmount;
+    private Long donationGoalAmount;
+    private Long donationCurrentAmount;
     private String donationPlan;
     private LocalDateTime donationCreateDate;
     private LocalDateTime donationDeadlineDate;
@@ -29,7 +29,7 @@ public class DonationView {
     // ★★★ JPQL에서 사용할 생성자 (List 제외) ★★★
     public DonationView(String donationTitle, String donationContent,
                         String donationOrganization, String donationTarget, int donationTargetCount,
-                        int donationGoalAmount, int donationCurrentAmount, String donationPlan,
+                        Long donationGoalAmount, Long donationCurrentAmount, String donationPlan,
                         LocalDateTime donationCreateDate, LocalDateTime donationDeadlineDate, String donationImg) {
         this.donationTitle = donationTitle;
         this.donationContent = donationContent;

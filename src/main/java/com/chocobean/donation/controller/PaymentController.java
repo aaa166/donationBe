@@ -1,13 +1,15 @@
 package com.chocobean.donation.controller;
 
+import com.chocobean.donation.dto.Donate;
 import com.chocobean.donation.dto.PayComment;
+import com.chocobean.donation.service.DonationService;
 import com.chocobean.donation.service.PaymentService;
+import com.chocobean.donation.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final DonationService donationService;
+    private final UserService userService;
 
     @GetMapping("/public/donationComments/{donationNo}")
     public ResponseEntity<List<PayComment>> getPayCommentsByDonationNo(
@@ -25,5 +29,22 @@ public class PaymentController {
         List<PayComment> PayComment = paymentService.findPayCommentsByDonationNo(no);
 
         return ResponseEntity.ok(PayComment);
+    }
+
+    @PostMapping("/donate")
+    public ResponseEntity<?> getDonationApply(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Donate donate
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userId = userDetails.getUsername();
+        //payment 결제내역 추가
+        paymentService.donate(userId,donate);
+        //donation 금액증가
+        donationService.addAmount(donate.getDonationNo(), donate.getPayAmount());
+
+        return ResponseEntity.ok("ok");
     }
 }

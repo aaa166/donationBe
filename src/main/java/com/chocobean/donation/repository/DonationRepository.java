@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DonationRepository extends JpaRepository<com.chocobean.donation.entity.Donation, Long> {
+
+
 
     @Query("SELECT d FROM " +
             "Donation d " +
@@ -26,4 +29,8 @@ public interface DonationRepository extends JpaRepository<com.chocobean.donation
     @Modifying
     @Query("UPDATE Donation d SET d.donationState = :state WHERE d.donationNo = :no")
     void updateDonationStateByNo(@Param("no") Long no, @Param("state") String state);
+
+    Optional<Donation> findByDonationNo(Long donationNo);
+
+    Donation getDonationByDonationNo(Long donationNo);
 }
