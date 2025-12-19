@@ -44,9 +44,9 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
-    public void donate(String userId, Donate donate) {
+    public void donate(Long userNo, Donate donate) {
 
-        Long userNo = userRepository.getUserNoByUserId(userId);
+
 
         User user = userRepository.findById(userNo)
                 .orElseThrow(() -> new RuntimeException("User not found"));

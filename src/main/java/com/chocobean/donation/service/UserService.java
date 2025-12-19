@@ -84,7 +84,7 @@ public class UserService {
 //
 //        return role;
 //    }
-
+    @Transactional
     public int getRoleByUserName(String userId) {
         User user= userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. ID: " + userId));;
@@ -93,4 +93,13 @@ public class UserService {
         return role;
     }
 
+    public Long getUserNoByUserId(String userId) {
+        return userRepository.getUserNoByUserId(userId);
+    }
+    @Transactional
+    public void addUserAmount(Long userNo, Long amount) {
+        User user = userRepository.findByUserNo(userNo);
+        user.setTotalAmount(user.getTotalAmount() + amount);
+
+    }
 }
