@@ -12,7 +12,7 @@ public class UserResponse {
     private String userId;
     private String userEmail;
     private String userPhone;
-    private int totalAmount;
+    private Long totalAmount;
 
     // Entity를 DTO로 변환하는 생성자
     public UserResponse(User user) {

@@ -38,7 +38,7 @@ public class User {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private int totalAmount;
+    private Long totalAmount;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payment> payments = new ArrayList<>();

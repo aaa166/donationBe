@@ -25,7 +25,7 @@ public class DonationService {
     private final CategoryRepository categoryRepository;
 
     @Transactional()
-    public void addAmount(Long donationNo, Long payAmount) {
+    public void addDonationAmount(Long donationNo, Long payAmount) {
         Donation donation = donationRepository.getDonationByDonationNo(donationNo);
         donation.setDonationCurrentAmount(donation.getDonationCurrentAmount() + payAmount);
     }
@@ -116,7 +116,7 @@ public class DonationService {
         donation.setDonationGoalAmount(insertDonation.getDonationGoalAmount());
         donation.setDonationPlan(insertDonation.getDonationPlan());
         donation.setDonationImg(insertDonation.getDonationImg());
-        donation.setDonationState("D");
+        donation.setDonationState("P");
         donation.setDonationCreateDate(LocalDate.now());
         donation.setDonationDeadlineDate(insertDonation.getDonationDeadlineDate());
 

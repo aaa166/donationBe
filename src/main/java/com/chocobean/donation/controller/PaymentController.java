@@ -40,10 +40,15 @@ public class PaymentController {
             return ResponseEntity.status(401).body("UNAUTHORIZED");
         }
         String userId = userDetails.getUsername();
+        Long userNo = userService.getUserNoByUserId(userId);
         //payment 결제내역 추가
-        paymentService.donate(userId,donate);
-        //donation 금액증가
-        donationService.addAmount(donate.getDonationNo(), donate.getPayAmount());
+        paymentService.donate(userNo,donate);
+
+        Long amount = donate.getPayAmount();
+        //donation 금액 증가
+        donationService.addDonationAmount(donate.getDonationNo(), amount);
+        //user 기부금액 증가
+        userService.addUserAmount(userNo,amount);
 
         return ResponseEntity.ok("ok");
     }
