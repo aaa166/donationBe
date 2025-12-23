@@ -3,6 +3,7 @@ package com.chocobean.donation.service;
 import com.chocobean.donation.dto.MyDonation;
 import com.chocobean.donation.dto.SignUpForm;
 import com.chocobean.donation.dto.UserResponse;
+import com.chocobean.donation.dto.UserState;
 import com.chocobean.donation.entity.Payment;
 import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.PaymentRepository;
@@ -47,6 +48,7 @@ public class UserService {
         user.setUserPassword(passwordEncoder.encode(signUpForm.getUserPassword()));
         user.setUserEmail(signUpForm.getUserEmail());
         user.setUserPhone(signUpForm.getUserPhone());
+        user.setUserState("A");
 
         return userRepository.save(user);
     }
@@ -101,5 +103,29 @@ public class UserService {
         User user = userRepository.findByUserNo(userNo);
         user.setTotalAmount(user.getTotalAmount() + amount);
 
+    }
+
+    @Transactional
+    public List<UserState> getUserState() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(this::convertToUserStateDto) //
+                .collect(Collectors.toList());
+    }
+    private UserState convertToUserStateDto(User user) {
+
+
+        return new UserState(
+                user.getUserNo(),
+                user.getUserId(),
+                user.getUserName(),
+                user.getUserEmail(),
+                user.getUserPhone(),
+                user.getUserRole(),
+                user.getTotalAmount(),
+                user.getUserState(),
+                user.getUserWarningHistory()
+        );
     }
 }

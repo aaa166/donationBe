@@ -40,6 +40,12 @@ public class User {
     @ColumnDefault("0")
     private Long totalAmount;
 
+    @Column(nullable = false)
+    private String userState = "A";//    A: 활성   I:비활성
+
+    @Column
+    private List<String> userWarningHistory;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payment> payments = new ArrayList<>();
 }
