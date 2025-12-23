@@ -75,4 +75,25 @@ public class AuthController {
 
         return ResponseEntity.ok(donationList);
     }
+
+    @GetMapping("/admin/userState")
+    public ResponseEntity<?> getUserState(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userName = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userName);
+
+        System.out.println(role);
+
+        List<UserState> userState = userService.getUserState();
+
+        if (role == 0){
+            return ResponseEntity.ok(userState);
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+    }
 }

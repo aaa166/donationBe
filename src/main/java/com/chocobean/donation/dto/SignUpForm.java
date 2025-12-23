@@ -12,4 +12,5 @@ public class SignUpForm {
     private String userPassword;
     private String userEmail;
     private String userPhone;
+    private String userState;
 }
