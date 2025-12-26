@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +16,6 @@ public class UserState {
     private int userRole;
     private Long totalAmount;
     private String userState;
-    private List<String> userWarningHistory;
 
 
 }

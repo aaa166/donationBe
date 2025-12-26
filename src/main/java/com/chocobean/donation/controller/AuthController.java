@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -92,6 +93,32 @@ public class AuthController {
 
         if (role == 0){
             return ResponseEntity.ok(userState);
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+    }
+
+    @PostMapping("/admin/changeUserState")
+    public ResponseEntity<?> changeUserState(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, Object> userData
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userName = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userName);
+
+        String userState = (String) userData.get("userState");
+        Long userNo = Long.valueOf(userData.get("userNo").toString());
+        System.out.println(userState);
+        System.out.println(userNo);
+
+
+        userService.changeUserState(userData);
+
+        if (role == 0){
+            return ResponseEntity.ok("상태 변경");
         }else{
             return ResponseEntity.status(403).body("NO_PERMISSION");
         }

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -124,8 +126,18 @@ public class UserService {
                 user.getUserPhone(),
                 user.getUserRole(),
                 user.getTotalAmount(),
-                user.getUserState(),
-                user.getUserWarningHistory()
+                user.getUserState()
         );
+    }
+
+    @Transactional
+    public void changeUserState(Map<String, Object> userData) {
+        String userState = (String) userData.get("userState");
+        Long userNo = Long.valueOf(userData.get("userNo").toString());
+        if (Objects.equals(userState, "A")){
+            userRepository.updateUserState(userNo, "I");
+        }else{
+            userRepository.updateUserState(userNo, "A");
+        }
     }
 }
