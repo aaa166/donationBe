@@ -16,20 +16,23 @@ public class Report {
     private Long reportNo;
 
     @Column(nullable = false)
-    private String reporterNo;
+    private Long reporterNo;
 
     @Column(nullable = false)
-    private String reportedNo;
+    private Long reportedNo;
 
-    @Column(nullable = false)
-    private String adminNo;
+    @Column
+    private Long adminNo;
 
     @Column(nullable = false)
     private String reportDetails;
 
     @Column(nullable = false)
-    private String reportStatus;    //P:대기  C:완료
+    private String reportStatus;    //P:대기  C:철회    R:완료
 
     @Column(nullable = false)
     private LocalDate reportDate = LocalDate.now();
+
+    @Column
+    private Long payNo;
 }

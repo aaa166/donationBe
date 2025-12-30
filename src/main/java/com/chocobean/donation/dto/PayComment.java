@@ -8,9 +8,12 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class PayComment {
+    private Long userNo;
+    private String userId;
     private String userName;
     private String payComment;
     private Long payAmount;
     private LocalDate payDate;
+    private Long payNo;
 
 }

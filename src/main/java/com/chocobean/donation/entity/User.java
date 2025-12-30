@@ -34,7 +34,7 @@ public class User {
     private String userPhone;
 
     @Column(nullable = false)
-    private int userRole;
+    private int userRole;       //0:관리자     1:일반    2:기업
 
     @Column(nullable = false)
     @ColumnDefault("0")
