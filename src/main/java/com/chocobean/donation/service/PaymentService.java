@@ -36,10 +36,13 @@ public class PaymentService {
 
         return payments.stream()
                 .map(payment -> new PayComment(
+                        payment.getUser().getUserNo(),
+                        payment.getUser().getUserId(),
                         payment.getUser().getUserName(),
                         payment.getPayComment(),
                         payment.getPayAmount(),
-                        payment.getPayDate()
+                        payment.getPayDate(),
+                        payment.getPayNo()
                 ))
                 .collect(Collectors.toList());
     }

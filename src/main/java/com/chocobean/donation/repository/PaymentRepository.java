@@ -4,9 +4,10 @@ import com.chocobean.donation.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
 
@@ -17,14 +18,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findPaymentsWithDonationByUserNo(@Param("userNo") Long userNo);
 
 
-//    @Query("SELECT new com.chocobean.donation.dto.PayComment(u.userName, p.payComment, p.payAmount, p.payDate) " +
-//            "FROM Payment p " +
-//            "JOIN p.user u " +
-//            "WHERE p.donation.donationNo = :donationNo")
-//    List<PayComment> findPayCommentsByDonationNo(@Param("donationNo") Long donationNo);
-    @Query("SELECT p " +
-            "FROM Payment p " +
-            "JOIN FETCH p.user u " +
-            "WHERE p.donation.donationNo = :donationNo")
+    @Query(value = "SELECT p.* " +
+            "FROM payment p " +
+            "LEFT JOIN report r ON r.pay_no = p.pay_no " +
+            "WHERE p.donation_no = :donationNo " +
+            "AND (r.report_status IS NULL OR r.report_status <> 'R') " +
+            "ORDER BY p.pay_date DESC", nativeQuery = true)
     List<Payment> findPaymentsWithUserByDonationNo(@Param("donationNo") Long donationNo);
 }
