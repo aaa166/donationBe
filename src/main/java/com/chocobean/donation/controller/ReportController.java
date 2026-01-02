@@ -1,16 +1,16 @@
 package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.InsertReport;
+import com.chocobean.donation.dto.ReportHistory;
 import com.chocobean.donation.service.ReportService;
 import com.chocobean.donation.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +29,8 @@ public class ReportController {
         }
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
-        System.out.println(reportData.getPayNo());
+
+//        String reportStatus = reportService.getReportStatusByReportData(reportData);
         //신고 여부
 //        if (){
 //        }
@@ -39,6 +40,28 @@ public class ReportController {
 
 
         return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping("/findReportHistory")
+    public ResponseEntity<?> findReportHistory(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("userNo") Long userNo
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userId = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userId);
+
+        List<ReportHistory> reportHistories = reportService.findReportHistory(userNo);
+        System.out.println(reportHistories);
+
+
+        if (role == 0){
+            return ResponseEntity.ok(reportHistories);
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
     }
 }
 
