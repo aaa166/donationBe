@@ -1,9 +1,6 @@
 package com.chocobean.donation.service;
 
-import com.chocobean.donation.dto.MyDonation;
-import com.chocobean.donation.dto.SignUpForm;
-import com.chocobean.donation.dto.UserResponse;
-import com.chocobean.donation.dto.UserState;
+import com.chocobean.donation.dto.*;
 import com.chocobean.donation.entity.Payment;
 import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.PaymentRepository;

@@ -1,6 +1,7 @@
 package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.InsertReport;
+import com.chocobean.donation.dto.ReportHistory;
 import com.chocobean.donation.entity.Report;
 import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.ReportRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,4 +43,14 @@ public class ReportService {
         }
         reportRepository.save(report);
     }
+
+    public List<ReportHistory> findReportHistory(Long userNo) {
+        return reportRepository.findByReportedNo(userNo);
+    }
+
+//    @Transactional
+//    public String getReportStatusByReportData(InsertReport reportData) {
+//        Long payNo = reportData.getPayNo();
+//        return reportRepository.getReportStatusBy
+//    }
 }
