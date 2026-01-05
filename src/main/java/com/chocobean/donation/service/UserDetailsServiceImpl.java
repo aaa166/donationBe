@@ -2,12 +2,13 @@ package com.chocobean.donation.service;
 
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,9 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        // 👇👇👇 바로 여기에 로그를 추가합니다! 👇👇👇
-//        System.out.println("--- UserDetailsService: loadUserByUsername 호출됨 ---");
-//        System.out.println("토큰에서 추출된 ID로 사용자를 찾습니다: " + userId);
 
         com.chocobean.donation.entity.User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> {
@@ -28,12 +26,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
                 });
 
-//        System.out.println(userId + " 사용자를 성공적으로 찾았습니다.");
+        String role = user.getUserRole() == 0 ? "admin" : "user";
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUserId(),
                 user.getUserPassword(),
-                new ArrayList<>() // 권한 목록
+                List.of(new SimpleGrantedAuthority(role))
         );
     }
 }

@@ -110,18 +110,16 @@ public class DonationController {
     }
 
 
-    @GetMapping("/public/role")
+    @GetMapping("/user/role")
     public int getRole(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         if (userDetails == null) {
-            System.out.println("null");
             return 3;
         }
 
         String userName = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userName);
-        return role;
+        return userService.getRoleByUserName(userName);
     }
 
     @GetMapping("/admin/donationState")

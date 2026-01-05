@@ -34,6 +34,13 @@ public class JwtTokenUtil {
     // 토큰 생성
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(a -> a.getAuthority())
+                .orElse("user");
+
+        claims.put("role", role.toLowerCase());
+
         return createToken(claims, userDetails.getUsername());
     }
 
