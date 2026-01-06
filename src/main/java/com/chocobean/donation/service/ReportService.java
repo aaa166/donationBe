@@ -32,7 +32,8 @@ public class ReportService {
         report.setReportedNo(reportData.getReportedId());
         report.setReportDetails(reportData.getReportDetails());
         report.setReportDate(LocalDate.now());
-        report.setPayNo(reportData.getPayNo());
+        report.setReportType(reportData.getReportType());
+        report.setTypeNo(reportData.getTypeNo());
 
         if (role == 0){
             report.setAdminNo(userNo);

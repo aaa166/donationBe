@@ -19,6 +19,7 @@ public class ReportHistory {
     private String reportDetails;
     private String reportStatus;
     private LocalDate reportDate;
-    private Long payNo;
+    private String reportType;  //"payComment"
+    private Long typeNo;
 
 }

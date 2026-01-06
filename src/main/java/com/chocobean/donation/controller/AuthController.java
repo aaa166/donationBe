@@ -18,7 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -26,12 +26,12 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
 
 
-    @GetMapping("/login")
+    @GetMapping("/auth/login")
     public ResponseEntity<?> login() {
         return ResponseEntity.ok("good!!");
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLogin userLogin) {
         try {
             authenticationManager.authenticate(
@@ -47,7 +47,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpForm signUpForm) {
         try {
             userService.signUp(signUpForm);

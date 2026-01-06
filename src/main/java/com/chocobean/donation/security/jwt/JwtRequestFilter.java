@@ -33,6 +33,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
+        System.out.println(">>> JWT FILTER PATH: " + request.getRequestURI());
+        System.out.println(">>> AUTH HEADER: " + request.getHeader("Authorization"));
+        System.out.println(">>> AUTH CONTEXT: " +
+                SecurityContextHolder.getContext().getAuthentication());
+
         String username = null;
         String jwtToken = null;
 
