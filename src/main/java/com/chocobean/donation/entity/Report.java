@@ -34,5 +34,8 @@ public class Report {
     private LocalDate reportDate = LocalDate.now();
 
     @Column
-    private Long payNo;
+    private String reportType;  //"payComment"
+
+    @Column
+    private Long typeNo;
 }

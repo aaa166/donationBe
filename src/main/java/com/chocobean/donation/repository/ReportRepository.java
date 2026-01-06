@@ -15,7 +15,7 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     @Query("""
     SELECT new com.chocobean.donation.dto.ReportHistory(
         r.reportNo, r.reporterNo, r.reportedNo, r.adminNo,
-        r.reportDetails, r.reportStatus, r.reportDate, r.payNo
+        r.reportDetails, r.reportStatus, r.reportDate, r.reportType,r.typeNo
     )
     FROM Report r
     WHERE r.reportedNo = :userNo
