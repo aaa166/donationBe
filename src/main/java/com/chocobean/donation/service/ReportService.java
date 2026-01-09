@@ -2,6 +2,7 @@ package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.InsertReport;
 import com.chocobean.donation.dto.ReportHistory;
+import com.chocobean.donation.dto.ReportState;
 import com.chocobean.donation.entity.Report;
 import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.ReportRepository;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +46,35 @@ public class ReportService {
         }
         reportRepository.save(report);
     }
-
+    @Transactional
     public List<ReportHistory> findReportHistory(Long userNo) {
         return reportRepository.findByReportedNo(userNo);
+    }
+    @Transactional
+    public List<ReportState> findReports() {
+
+        return reportRepository.findAll().stream()
+                .map(report -> {
+                    String reporterId = userRepository.findUserIdByUserNo(report.getReporterNo());
+                    String reportedId = userRepository.findUserIdByUserNo(report.getReportedNo());
+                    String adminId = report.getAdminNo() != null ? userRepository.findUserIdByUserNo(report.getAdminNo()) : null;
+
+//                    System.out.println(reporterId);
+//                    System.out.println(reportedId);
+//                    System.out.println(adminId);
+                    return new ReportState(
+                            report.getReportNo(),
+                            reporterId,
+                            reportedId,
+                            adminId,
+                            report.getReportDetails(),
+                            report.getReportStatus(),
+                            report.getReportDate(),
+                            report.getReportType(),
+                            report.getTypeNo()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
 //    @Transactional

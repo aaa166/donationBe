@@ -3,21 +3,22 @@ package com.chocobean.donation.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
-
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class ReportState {
     private Long reportNo;
-    private Long reporterNo;
-    private Long reportedNo;
-    private Long adminNo;
+    private String reporterId;
+    private String reportedId;
+    private String adminNo;
     private String reportDetails;
-    private String reportStatus;    //P:대기  C:철회    R:완료
+    private String reportStatus;
     private LocalDate reportDate;
-    private Long typeNo;
     private String reportType;  //"payComment"
-
+    private Long typeNo;
+    
 }

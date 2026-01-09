@@ -22,4 +22,6 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
       AND r.reportStatus = 'R'
     """)
     List<ReportHistory> findByReportedNo(@Param("userNo") Long userNo);
+
+
 }
