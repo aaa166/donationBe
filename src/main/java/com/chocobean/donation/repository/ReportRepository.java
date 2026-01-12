@@ -24,4 +24,5 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     List<ReportHistory> findByReportedNo(@Param("userNo") Long userNo);
 
 
+    boolean existsByTypeNoAndReportType(Long typeNo, String reportType);
 }
