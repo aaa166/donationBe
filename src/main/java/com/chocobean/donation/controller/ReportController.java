@@ -31,10 +31,13 @@ public class ReportController {
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
 
-//        String reportStatus = reportService.getReportStatusByReportData(reportData);
+        boolean isReported = reportService.getReportStatusByReportData(reportData);
         //신고 여부
-//        if (){
-//        }
+        if (isReported){
+            return ResponseEntity
+                    .status(409) // Conflict (중복 리소스)
+                    .body("ALREADY_REPORTED");
+        }
 
         //신고 추가
         reportService.insertReport(userNo,reportData);
@@ -65,7 +68,7 @@ public class ReportController {
         }
     }
 
-    //하는중
+
     @GetMapping("/admin/findReportState")
     public ResponseEntity<?> findReportState(
             @AuthenticationPrincipal UserDetails userDetails

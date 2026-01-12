@@ -77,9 +77,10 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-//    @Transactional
-//    public String getReportStatusByReportData(InsertReport reportData) {
-//        Long payNo = reportData.getPayNo();
-//        return reportRepository.getReportStatusBy
-//    }
+    @Transactional
+    public boolean getReportStatusByReportData(InsertReport reportData) {
+        Long typeNo = reportData.getTypeNo();
+        String reportType = reportData.getReportType();
+        return reportRepository.existsByTypeNoAndReportType(typeNo, reportType);
+    }
 }
