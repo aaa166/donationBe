@@ -83,4 +83,14 @@ public class ReportService {
         String reportType = reportData.getReportType();
         return reportRepository.existsByTypeNoAndReportType(typeNo, reportType);
     }
+    @Transactional
+    public void changeReportStateC(Long reportNo,String userId) {
+        Long adminNo = userRepository.getUserNoByUserId(userId);
+        reportRepository.updateReportStatusToC(reportNo,adminNo);
+    }
+    @Transactional
+    public void changeReportStateR(Long reportNo,String userId) {
+        Long adminNo = userRepository.getUserNoByUserId(userId);
+        reportRepository.updateReportStatusToR(reportNo,adminNo);
+    }
 }
