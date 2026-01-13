@@ -3,6 +3,7 @@ package com.chocobean.donation.repository;
 import com.chocobean.donation.dto.ReportHistory;
 import com.chocobean.donation.entity.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,4 +26,28 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
 
 
     boolean existsByTypeNoAndReportType(Long typeNo, String reportType);
+
+    @Modifying
+    @Query("""
+        UPDATE Report r
+        SET r.reportStatus = 'C',
+            r.adminNo = :adminNo
+        WHERE r.reportNo = :reportNo
+    """)
+    void updateReportStatusToC(
+            @Param("reportNo") Long reportNo,
+            @Param("adminNo") Long adminNo
+    );
+
+    @Modifying
+    @Query("""
+        UPDATE Report r
+        SET r.reportStatus = 'R',
+            r.adminNo = :adminNo
+        WHERE r.reportNo = :reportNo
+    """)
+    void updateReportStatusToR(
+            @Param("reportNo") Long reportNo,
+            @Param("adminNo") Long adminNo
+    );
 }

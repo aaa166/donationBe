@@ -88,5 +88,45 @@ public class ReportController {
             return ResponseEntity.status(403).body("NO_PERMISSION");
         }
     }
+
+    @GetMapping("/admin/changeReportStateC")
+    public ResponseEntity<?> changeReportStateC(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("reportNo") Long reportNo
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userId = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userId);
+
+
+        if (role == 0){
+            reportService.changeReportStateC(reportNo,userId);
+            return ResponseEntity.ok("ok");
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+    }
+    @GetMapping("/admin/changeReportStateR")
+    public ResponseEntity<?> changeReportStateR(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("reportNo") Long reportNo
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userId = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userId);
+
+
+        if (role == 0){
+            reportService.changeReportStateR(reportNo,userId);
+            return ResponseEntity.ok("ok");
+        }else{
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+    }
+
 }
 
