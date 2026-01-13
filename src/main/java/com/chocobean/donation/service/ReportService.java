@@ -59,9 +59,8 @@ public class ReportService {
                     String reportedId = userRepository.findUserIdByUserNo(report.getReportedNo());
                     String adminId = report.getAdminNo() != null ? userRepository.findUserIdByUserNo(report.getAdminNo()) : null;
 
-//                    System.out.println(reporterId);
-//                    System.out.println(reportedId);
-//                    System.out.println(adminId);
+                    Long donationNo = reportRepository.findDonationNoByTypeNo(report.getTypeNo());
+
                     return new ReportState(
                             report.getReportNo(),
                             reporterId,
@@ -71,7 +70,8 @@ public class ReportService {
                             report.getReportStatus(),
                             report.getReportDate(),
                             report.getReportType(),
-                            report.getTypeNo()
+                            report.getTypeNo(),
+                            donationNo
                     );
                 })
                 .collect(Collectors.toList());

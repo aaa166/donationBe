@@ -50,4 +50,12 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
             @Param("reportNo") Long reportNo,
             @Param("adminNo") Long adminNo
     );
+
+    @Query("""
+        SELECT p.donation.donationNo
+        FROM Report r
+        JOIN Payment p ON r.typeNo = p.payNo
+        WHERE r.typeNo = :typeNo
+    """)
+    Long findDonationNoByTypeNo(@Param("typeNo") Long typeNo);
 }
