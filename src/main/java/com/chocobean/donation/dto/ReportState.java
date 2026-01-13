@@ -20,5 +20,6 @@ public class ReportState {
     private LocalDate reportDate;
     private String reportType;  //"payComment"
     private Long typeNo;
-    
+    private Long donationNo;
+
 }
