@@ -15,5 +15,7 @@ public class DonationState {
     private String donationOrganization;
     private LocalDate donationDeadlineDate;
     private String donationState;
+    private Long donationGoalAmount;
+    private Long donationCurrentAmount;
 
 }

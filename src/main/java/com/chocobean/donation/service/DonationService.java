@@ -141,7 +141,9 @@ public class DonationService {
                 donation.getDonationTitle(),
                 donation.getDonationOrganization(),
                 donation.getDonationDeadlineDate(),
-                donation.getDonationState()
+                donation.getDonationState(),
+                donation.getDonationGoalAmount(),
+                donation.getDonationCurrentAmount()
         );
     }
     @Transactional
