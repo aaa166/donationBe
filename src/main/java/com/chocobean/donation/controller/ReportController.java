@@ -68,7 +68,7 @@ public class ReportController {
         }
     }
 
-
+    //report페이지
     @GetMapping("/admin/findReportState")
     public ResponseEntity<?> findReportState(
             @AuthenticationPrincipal UserDetails userDetails
