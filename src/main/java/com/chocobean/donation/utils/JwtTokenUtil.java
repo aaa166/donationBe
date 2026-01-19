@@ -21,8 +21,11 @@ public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    @Value("${jwt.access}")
+    private Long accessExpiration;
+
+    @Value("${jwt.refresh}")
+    private Long refreshExpiration;
 
     private Key getSigningKey() {
 //        byte[] keyBytes = Decoders.BASE64.decode(secret);
@@ -31,24 +34,35 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 토큰 생성
-    public String generateToken(UserDetails userDetails) {
+    /* ================= ACCESS TOKEN ================= */
+
+    public String generateAccessToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
         String role = userDetails.getAuthorities().stream()
                 .findFirst()
                 .map(a -> a.getAuthority())
-                .orElse("user");
+                .orElse("ROLE_USER");
 
-        claims.put("role", role.toLowerCase());
+        claims.put("role", role);
 
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims, userDetails.getUsername(), accessExpiration);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    /* ================= REFRESH TOKEN ================= */
+
+    public String generateRefreshToken(String username) {
+        return createToken(new HashMap<>(), username, refreshExpiration);
+    }
+
+    private String createToken(Map<String, Object> claims,
+                               String subject,
+                               Long expiration) {
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -78,9 +92,9 @@ public class JwtTokenUtil {
     }
 
     // 토큰 만료 확인
-    private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+    public boolean isTokenExpired(String token) {
+        return getExpirationDateFromToken(token)
+                .before(new Date());
     }
 
     // 토큰 유효성 검증

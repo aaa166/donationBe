@@ -6,6 +6,8 @@ jwt:
   #  secret: 'eW91ci12ZXJ5LWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3Qtc2FtcGxl'
   secret: 'ChocobeanDonationProjectSecretKeyForJWT20251017ThisIsVerySecure'
   expiration: 86400000
+  access: 900000        # 15분
+  refresh: 1209600000   # 14일
 
 spring:
   # 1. 서블릿(HTTP 요청/응답) 인코딩 설정 추가
