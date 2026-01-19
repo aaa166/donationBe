@@ -42,9 +42,10 @@ public class AuthController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getId());
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        final String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
+        final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken));
     }
 
     @PostMapping("/auth/signup")

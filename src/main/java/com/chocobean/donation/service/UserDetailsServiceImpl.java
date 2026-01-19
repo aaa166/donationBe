@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
                 });
 
-        String role = user.getUserRole() == 0 ? "admin" : "user";
+        String role = user.getUserRole() == 0 ? "ROLE_ADMIN" : "ROLE_USER";
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUserId(),
