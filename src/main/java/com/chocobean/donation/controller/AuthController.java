@@ -4,6 +4,7 @@ import com.chocobean.donation.dto.*;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -110,18 +111,43 @@ public class AuthController {
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
 
-        String userState = (String) userData.get("userState");
-        Long userNo = Long.valueOf(userData.get("userNo").toString());
-        System.out.println(userState);
-        System.out.println(userNo);
-
-
-        userService.changeUserState(userData);
+//        String userState = (String) userData.get("userState");
+//        Long userNo = Long.valueOf(userData.get("userNo").toString());
 
         if (role == 0){
+            userService.changeUserState(userData);
             return ResponseEntity.ok("상태 변경");
         }else{
             return ResponseEntity.status(403).body("NO_PERMISSION");
         }
+    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<?> refreshAccessToken(
+            @RequestBody Map<String, String> request) {
+
+        String refreshToken = request.get("refreshToken");
+
+        // 1. RefreshToken 만료 체크
+        if (jwtTokenUtil.isTokenExpired(refreshToken)) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Refresh token expired");
+        }
+
+        // 2. RefreshToken에서 username 추출
+        String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
+
+        // 3. 사용자 정보 조회
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(username);
+
+        // 4. 새로운 AccessToken 발급
+        String newAccessToken =
+                jwtTokenUtil.generateAccessToken(userDetails);
+
+        return ResponseEntity.ok(Map.of(
+                "accessToken", newAccessToken
+        ));
     }
 }
