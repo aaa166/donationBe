@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -89,10 +90,10 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/admin/changeReportStateC")
+    @PostMapping("/admin/changeReportStateC")
     public ResponseEntity<?> changeReportStateC(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam("reportNo") Long reportNo
+            @RequestBody Map<String, Long> body
     ) {
         if (userDetails == null) {
             return ResponseEntity.status(401).body("UNAUTHORIZED");
@@ -100,18 +101,19 @@ public class ReportController {
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);
 
-
-        if (role == 0){
-            reportService.changeReportStateC(reportNo,userId);
+        if (role == 0) {
+            Long reportNo = body.get("reportNo");
+            reportService.changeReportStateC(reportNo, userId);
             return ResponseEntity.ok("ok");
-        }else{
+        } else {
             return ResponseEntity.status(403).body("NO_PERMISSION");
         }
     }
-    @GetMapping("/admin/changeReportStateR")
+
+    @PostMapping("/admin/changeReportStateR")
     public ResponseEntity<?> changeReportStateR(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam("reportNo") Long reportNo
+            @RequestBody Map<String, Long> body
     ) {
         if (userDetails == null) {
             return ResponseEntity.status(401).body("UNAUTHORIZED");
@@ -121,6 +123,7 @@ public class ReportController {
 
 
         if (role == 0){
+            Long reportNo = body.get("reportNo");
             reportService.changeReportStateR(reportNo,userId);
             return ResponseEntity.ok("ok");
         }else{
