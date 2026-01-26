@@ -33,15 +33,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
+        // DEBUG: 요청 헤더와 SecurityContext 확인
         System.out.println(">>> JWT FILTER PATH: " + request.getRequestURI());
-        System.out.println(">>> AUTH HEADER: " + request.getHeader("Authorization"));
-        System.out.println(">>> AUTH CONTEXT: " +
+        System.out.println(">>> AUTH HEADER: " + requestTokenHeader);
+        System.out.println(">>> AUTH CONTEXT BEFORE: " +
                 SecurityContextHolder.getContext().getAuthentication());
 
         String username = null;
         String jwtToken = null;
 
-        // JWT 토큰이 "Bearer "로 시작하는지 확인
+        // Bearer 토큰 확인
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
             try {
@@ -62,15 +63,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                // 여기서 SecurityContext 세팅 → @AuthenticationPrincipal에 userDetails 들어감
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println(">>> AUTH CONTEXT AFTER: " +
+                        SecurityContextHolder.getContext().getAuthentication());
             }
         }
+
         chain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/images/") || path.startsWith("/public/");
+        // public, images 경로는 JWT 필터 무시
+        return path.startsWith("/images/") || path.startsWith("/public/") || path.startsWith("/api/auth/");
     }
 }
