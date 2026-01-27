@@ -137,4 +137,27 @@ public class UserService {
             userRepository.updateUserState(userNo, "A");
         }
     }
+
+    @Transactional
+    public void updateUserInfo(Long userNo, UserResponse userResponse) {
+       String id = userResponse.getUserId();
+       String email = userResponse.getUserEmail();
+       String phone = userResponse.getUserPhone();
+
+       userRepository.updateUserInfo(userNo,id,email,phone);
+    }
+    @Transactional
+    public boolean duplicateIdCheck(String userId) {
+        System.out.println(userId);
+        System.out.println(userRepository.countByUserId(userId));
+        return userRepository.countByUserId(userId) == 0;
+    }
+    @Transactional
+    public boolean duplicateEmailCheck(String email) {
+        return  userRepository.countByUserEmail(email) == 0;
+    }
+    @Transactional
+    public boolean duplicatePhoneCheck(String phone) {
+        return  userRepository.countByUserPhone(phone) == 0;
+    }
 }

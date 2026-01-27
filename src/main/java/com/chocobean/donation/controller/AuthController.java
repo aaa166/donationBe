@@ -150,4 +150,65 @@ public class AuthController {
                 "accessToken", newAccessToken
         ));
     }
+
+    @PatchMapping("/updateUserInfo")
+    public ResponseEntity<?> updateUserInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UserResponse userResponse
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userId = userDetails.getUsername();
+        Long userNo = userService.getUserNoByUserId(userId);
+        userService.updateUserInfo(userNo,userResponse);
+
+        return ResponseEntity.ok("ok");
+
+    }
+    //중복검사
+    @GetMapping("/duplicateIdCheck")
+    public ResponseEntity<?> duplicateIdCheck(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("userId") String userId
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        if (userService.duplicateIdCheck(userId)){
+            return ResponseEntity.ok("ok");
+        }else {
+            return ResponseEntity.status(409).body("DUPLICATE_ID");
+        }
+    }
+    @GetMapping("/duplicateEmailCheck")
+    public ResponseEntity<?> duplicateEmailCheck(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("email") String email
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        if (userService.duplicateEmailCheck(email)){
+            return ResponseEntity.ok("ok");
+        }else {
+            return ResponseEntity.status(409).body("DUPLICATE_EMAIL");
+        }
+    }
+    @GetMapping("/duplicatePhoneCheck")
+    public ResponseEntity<?> duplicatePhoneCheck(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("phone") String phone
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        if (userService.duplicatePhoneCheck(phone)){
+            return ResponseEntity.ok("ok");
+        }else {
+            return ResponseEntity.status(409).body("DUPLICATE_PHONE");
+        }
+    }
+
+
 }
