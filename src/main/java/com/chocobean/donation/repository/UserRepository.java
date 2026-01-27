@@ -26,4 +26,30 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.userId FROM User u WHERE u.userNo = :userNo")
     String findUserIdByUserNo(@Param("userNo") Long userNo);
 
+    User findByUserName(String userName);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userId = :userId")
+    int countByUserId(@Param("userId")String userId);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userPhone = :phone")
+    int countByUserPhone(@Param("phone")String phone);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userEmail = :email")
+    int countByUserEmail(@Param("email")String email);
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+                UPDATE User u
+                SET u.userId = :id,
+                    u.userEmail = :email,
+                    u.userPhone = :phone
+                WHERE u.userNo = :no
+            """)
+    void updateUserInfo(
+            @Param("no") Long no,
+            @Param("id") String id,
+            @Param("email") String email,
+            @Param("phone") String phone
+    );
+
 }
