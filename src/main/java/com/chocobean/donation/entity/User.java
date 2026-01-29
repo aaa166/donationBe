@@ -46,4 +46,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payment> payments = new ArrayList<>();
+
+    public void updatePassword(String password) {
+        this.userPassword = password;
+    }
 }

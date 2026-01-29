@@ -210,5 +210,25 @@ public class AuthController {
         }
     }
 
+    @PatchMapping("/updatePassword")
+    public ResponseEntity<?> updatePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody Map<String, String> inputData
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+        String userId = userDetails.getUsername();
+        Long userNo = userService.getUserNoByUserId(userId);
+
+        String check = userService.updatePassword(inputData,userNo);
+        if (check.equals("unauthorized")){
+            return ResponseEntity.status(422).body("unauthorized");
+        }
+        if (check.equals("mismatch")){
+            return ResponseEntity.status(422).body("mismatch");
+        }
+        return ResponseEntity.ok("ok");
+    }
 
 }

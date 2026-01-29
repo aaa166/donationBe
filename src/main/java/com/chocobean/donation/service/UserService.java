@@ -160,4 +160,23 @@ public class UserService {
     public boolean duplicatePhoneCheck(String phone) {
         return  userRepository.countByUserPhone(phone) == 0;
     }
+
+    @Transactional
+    public String updatePassword(Map<String, String> inputData, Long userNo) {
+        User user = userRepository.findByUserNo(userNo);
+        //비밀번호 확인
+        if (!passwordEncoder.matches(inputData.get("currentPassword"),user.getUserPassword())) {
+            return "unauthorized";
+        }
+        //새 비밀번호 일치 확인
+        if (!inputData.get("newPassword").equals(inputData.get("confirmPassword"))){
+            return "mismatch";
+        }
+
+        String encodedPassword =
+                passwordEncoder.encode((String) inputData.get("newPassword"));
+        user.updatePassword(encodedPassword);
+
+        return "ok";
+    }
 }
