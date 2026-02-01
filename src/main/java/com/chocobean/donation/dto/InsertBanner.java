@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 @Getter
@@ -17,6 +18,9 @@ public class InsertBanner {
     private String bannerImg;
     private String bannerURL;
     private LocalDate bannerCreateDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate bannerStartDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate bannerDeadlineDate;
 }
