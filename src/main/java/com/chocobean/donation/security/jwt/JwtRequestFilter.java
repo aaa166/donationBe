@@ -33,11 +33,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        // DEBUG: 요청 헤더와 SecurityContext 확인
-        System.out.println(">>> JWT FILTER PATH: " + request.getRequestURI());
-        System.out.println(">>> AUTH HEADER: " + requestTokenHeader);
-        System.out.println(">>> AUTH CONTEXT BEFORE: " +
-                SecurityContextHolder.getContext().getAuthentication());
+
 
         String username = null;
         String jwtToken = null;
@@ -67,8 +63,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // 여기서 SecurityContext 세팅 → @AuthenticationPrincipal에 userDetails 들어감
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                System.out.println(">>> AUTH CONTEXT AFTER: " +
-                        SecurityContextHolder.getContext().getAuthentication());
+
             }
         }
 

@@ -2,6 +2,7 @@ package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.InsertBanner;
 import com.chocobean.donation.dto.InsertDonation;
+import com.chocobean.donation.dto.ReportHistory;
 import com.chocobean.donation.service.BannerService;
 import com.chocobean.donation.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,29 +25,31 @@ import java.util.UUID;
 public class BannerController {
 
     private final BannerService bannerService;
+    private final UserService userService;
 
     @PostMapping("/admin/insertBanner")
     public ResponseEntity<?> insertBanner(
-            @RequestParam(value = "image", required = false) MultipartFile image,
-            @AuthenticationPrincipal UserDetails userDetails,
-            @ModelAttribute InsertBanner insertBanner,
-            @RequestParam("categories") String categoriesJson
-            ) {
-        // 📁 이미지 저장 폴더
-        String uploadDir = "C:/Users/kmcsl/OneDrive/Desktop/KH/연습/img/";
+            @RequestPart("banner") InsertBanner insertBanner,
+            @RequestPart(value = "bannerImg", required = false) MultipartFile bannerImg,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+
+        String userId = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userId);
+        if (role != 0) {
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+
         String imageUrl = null;
-
-        // 1️⃣ 파일 처리
-        if (image != null && !image.isEmpty()) {
+        if (bannerImg != null && !bannerImg.isEmpty()) {
             try {
-                String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-
-                File saveFile = new File(uploadDir + fileName);
-                image.transferTo(saveFile);
-
-                // DB에 저장할 경로 (프론트에서 접근할 URL 기준)
+                String fileName = UUID.randomUUID() + "_" + bannerImg.getOriginalFilename();
+                File saveFile = new File("C:/Users/kmcsl/OneDrive/Desktop/KH/연습/img/" + fileName);
+                bannerImg.transferTo(saveFile);
                 imageUrl = "/images/" + fileName;
-
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.internalServerError().body("FILE_UPLOAD_FAILED");
@@ -54,19 +57,7 @@ public class BannerController {
         }
 
         insertBanner.setBannerImg(imageUrl);
-
-        // 2️⃣ 카테고리 JSON 파싱 + DB 저장
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            List<String> categoryNames =
-                    mapper.readValue(categoriesJson, new TypeReference<List<String>>() {});
-
-            bannerService.insertBanner(insertBanner, categoryNames);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("INVALID_DATA_OR_DB_ERROR");
-        }
+        bannerService.insertBanner(insertBanner);
 
         return ResponseEntity.ok("ok");
     }

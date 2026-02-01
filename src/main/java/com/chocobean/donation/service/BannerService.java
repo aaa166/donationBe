@@ -16,7 +16,7 @@ public class BannerService {
     private final BannerRepository bannerRepository;
 
     @Transactional
-    public void insertBanner(InsertBanner insertBanner, List<String> categoryNames) {
+    public void insertBanner(InsertBanner insertBanner) {
         Banner banner = new Banner();
         banner.setBannerTitle(insertBanner.getBannerTitle());
         banner.setBannerURL(insertBanner.getBannerURL());
