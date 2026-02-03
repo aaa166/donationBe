@@ -62,4 +62,24 @@ public class BannerController {
         return ResponseEntity.ok("ok");
     }
 
+    @GetMapping("/admin/bannerState")
+    public ResponseEntity<?> bannerState(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("UNAUTHORIZED");
+        }
+
+        String userId = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userId);
+
+
+        if (role == 0) {
+            List<InsertBanner> banners = bannerService.findAll();
+            return ResponseEntity.ok(banners);
+        }else {
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+    }
+
 }

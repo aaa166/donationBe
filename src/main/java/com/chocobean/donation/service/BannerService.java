@@ -9,11 +9,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BannerService {
     private final BannerRepository bannerRepository;
+
+    @Transactional
+    public List<InsertBanner> findAll() {
+        List<Banner> bannerEntities = bannerRepository.findAll();
+        List<InsertBanner> banners = bannerEntities.stream()
+                .map(b -> new InsertBanner(b))
+                .collect(Collectors.toList());
+        return banners;
+    }
 
     @Transactional
     public void insertBanner(InsertBanner insertBanner) {
