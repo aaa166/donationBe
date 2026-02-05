@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,5 +36,16 @@ public class BannerService {
         banner.setBannerDeadlineDate(insertBanner.getBannerDeadlineDate());
 
         bannerRepository.save(banner);
+    }
+
+    @Transactional
+    public List<InsertBanner> findActiveBanners() {
+        LocalDate today = LocalDate.now();
+        List<Banner> banners = bannerRepository.findActiveBanners(today);
+        List<InsertBanner> activeBanners = banners.stream()
+                .map(InsertBanner::new)
+                .collect(Collectors.toList());
+
+        return activeBanners;
     }
 }
