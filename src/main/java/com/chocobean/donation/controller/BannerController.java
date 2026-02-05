@@ -82,4 +82,12 @@ public class BannerController {
         }
     }
 
+    @GetMapping("/public/mainBanner")
+    public ResponseEntity<?> mainBanner() {
+        List<InsertBanner> activeBanners = bannerService.findActiveBanners();
+
+        return ResponseEntity.ok(activeBanners);
+
+    }
+
 }
