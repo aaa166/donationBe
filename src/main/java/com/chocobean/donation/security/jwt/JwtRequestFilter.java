@@ -19,25 +19,18 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
     @Autowired
     private UserDetailsService userDetailsService;
-
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
 
         final String requestTokenHeader = request.getHeader("Authorization");
-
-
-
         String username = null;
         String jwtToken = null;
-
         // Bearer 토큰 확인
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
@@ -49,7 +42,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 logger.error("JWT 토큰이 만료되었습니다", e);
             }
         }
-
         // 토큰 유효성 검증
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -66,7 +58,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             }
         }
-
         chain.doFilter(request, response);
     }
 
