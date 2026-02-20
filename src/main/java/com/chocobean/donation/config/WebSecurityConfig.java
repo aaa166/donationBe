@@ -1,8 +1,12 @@
 package com.chocobean.donation.config;
 
+import com.chocobean.donation.entity.Provider;
+import com.chocobean.donation.entity.User;
 import com.chocobean.donation.security.jwt.JwtAuthenticationEntryPoint;
 import com.chocobean.donation.security.jwt.JwtRequestFilter;
 import com.chocobean.donation.service.CustomOAuth2UserService;
+import com.chocobean.donation.service.UserService;
+import com.chocobean.donation.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,9 +31,14 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtRequestFilter jwtRequestFilter;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    // 순환 참조 방지: Lazy 사용
     private CustomOAuth2UserService customOAuth2UserService;
+
+    // Lazy 주입으로 순환 참조 방지
+    @Autowired
+    @Lazy
+    private UserService userService;
 
     @Autowired
     public void setCustomOAuth2UserService(@Lazy CustomOAuth2UserService customOAuth2UserService) {
@@ -68,6 +77,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
+        // JWT 필터 추가
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 Login
@@ -76,7 +86,31 @@ public class WebSecurityConfig {
                         .userService(customOAuth2UserService)
                 )
                 .successHandler((request, response, authentication) -> {
-                    response.sendRedirect("/");
+                    // OAuth2User 정보 가져오기
+                    var oAuth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
+                    var attributes = oAuth2User.getAttributes();
+
+                    // providerId, Provider 추출 (네이버 예시)
+                    var responseMap = (java.util.Map<String, Object>) attributes.get("response");
+                    String providerId = (String) responseMap.get("id");
+                    Provider provider = Provider.NAVER;
+
+                    // DB에서 User 가져오기
+                    User user = userService.findByProviderAndProviderId(provider, providerId)
+                            .orElseThrow(() -> new IllegalStateException("사용자 없음"));
+
+                    // JWT 토큰 생성
+                    String username = user.getUserId();
+                    String role = user.getUserRole() == 0 ? "ROLE_ADMIN" : "ROLE_USER";
+
+                    String accessToken = jwtTokenUtil.generateAccessToken(username, role);
+                    String refreshToken = jwtTokenUtil.generateRefreshToken(username);
+
+                    // React 프론트로 리다이렉트 + 토큰 전달
+                    String redirectUrl = "http://localhost:5173/oauth2/callback?accessToken=" + accessToken
+                            + "&refreshToken=" + refreshToken;
+
+                    response.sendRedirect(redirectUrl);
                 })
         );
 

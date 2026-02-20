@@ -183,6 +183,10 @@ public class UserService {
 
         return "ok";
     }
+    @Transactional
+    public Optional<User> findByProviderAndProviderId(Provider provider, String providerId) {
+        return userRepository.findByProviderAndProviderId(provider, providerId);
+    }
 
     //소셜로그인
     @Transactional
