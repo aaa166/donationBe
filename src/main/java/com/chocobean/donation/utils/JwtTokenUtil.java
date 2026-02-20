@@ -49,7 +49,12 @@ public class JwtTokenUtil {
         return createToken(claims, userDetails.getUsername(), accessExpiration);
     }
 
+    public String generateAccessToken(String username, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role != null ? role : "ROLE_USER"); // role이 null이면 기본 ROLE_USER
 
+        return createToken(claims, username, accessExpiration);
+    }
 
     /* ================= REFRESH TOKEN ================= */
 

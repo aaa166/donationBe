@@ -33,11 +33,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             String name = (String) response.get("name");
             String email = (String) response.get("email");
-            String nickname = (String) response.get("nickname");
+            String providerId = (String) response.get("id");
             String phone = (String) response.get("mobile");
 
             // UserService 호출: DB 조회/가입 처리
-            User user = userService.socialLogin(name, email, nickname, phone,  Provider.NAVER);
+            User user = userService.socialLogin(name, email, phone, providerId,  Provider.NAVER);
 
 
         }
