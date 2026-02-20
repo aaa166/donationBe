@@ -24,7 +24,13 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userId;
 
-    @Column(nullable = false)
+    // 소셜 고유 ID
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider;  // LOCAL, GOOGLE, NAVER, KAKAO
+
+    @Column
     private String userPassword;
 
     @Column(nullable = false)
@@ -51,3 +57,7 @@ public class User {
         this.userPassword = password;
     }
 }
+
+
+
+

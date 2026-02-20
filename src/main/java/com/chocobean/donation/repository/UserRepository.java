@@ -1,5 +1,6 @@
 package com.chocobean.donation.repository;
 
+import com.chocobean.donation.entity.Provider;
 import com.chocobean.donation.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -51,5 +52,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("email") String email,
             @Param("phone") String phone
     );
+    //소셜 로그인 조회
+    Optional<User> findByProviderAndProviderId(Provider provider, String providerId);
 
 }

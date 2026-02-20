@@ -2,6 +2,7 @@ package com.chocobean.donation.service;
 
 import com.chocobean.donation.dto.*;
 import com.chocobean.donation.entity.Payment;
+import com.chocobean.donation.entity.Provider;
 import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.PaymentRepository;
 import com.chocobean.donation.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -180,5 +182,29 @@ public class UserService {
         user.updatePassword(encodedPassword);
 
         return "ok";
+    }
+
+    //소셜로그인
+    @Transactional
+    public User socialLogin(String userName, String userEmail, String userPhone,
+                            String providerId, Provider provider) {
+
+        Optional<User> optionalUser = userRepository.findByProviderAndProviderId(provider, providerId);
+
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
+        } else {
+            User user = new User();
+            user.setUserName(userName);
+            user.setUserEmail(userEmail);
+            user.setUserPhone(userPhone);
+            user.setProvider(provider);
+            user.setProviderId(providerId);
+            user.setUserRole(1);
+            user.setUserState("A");
+            user.setTotalAmount(0L);
+
+            return userRepository.save(user);
+        }
     }
 }
