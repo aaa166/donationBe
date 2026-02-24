@@ -24,47 +24,49 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
 
-        final String requestTokenHeader = request.getHeader("Authorization");
+        String path = request.getServletPath();
+        if (path.startsWith("/api/auth/refresh") || path.startsWith("/api/auth/login")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        final String header = request.getHeader("Authorization");
         String username = null;
         String jwtToken = null;
-        // Bearer 토큰 확인
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
+
+        if (header != null && header.startsWith("Bearer ")) {
+            jwtToken = header.substring(7);
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                logger.error("JWT 토큰을 가져올 수 없습니다", e);
             } catch (ExpiredJwtException e) {
-                logger.error("JWT 토큰이 만료되었습니다", e);
+                logger.warn("Access Token 만료됨");
+                // 여기서 response.setStatus(401)을 하지 않고 그대로 넘겨야 프론트 인터셉터가 refresh를 호출함
+            } catch (Exception e) {
+                logger.error("JWT 로직 에러");
             }
         }
-        // 토큰 유효성 검증
+
+        // [핵심] 추출된 username으로 인증 객체를 만들어 Context에 저장해야 함
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // 여기서 SecurityContext 세팅 → @AuthenticationPrincipal에 userDetails 들어감
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-
-
             }
         }
+
         chain.doFilter(request, response);
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
-        // public, images 경로는 JWT 필터 무시
-        return path.startsWith("/images/") || path.startsWith("/public/") || path.startsWith("/api/auth/");
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        String path = request.getServletPath();
+//        // public, images 경로는 JWT 필터 무시
+//        return path.startsWith("/images/") || path.startsWith("/public/") || path.startsWith("/api/auth/");
+//    }
 }

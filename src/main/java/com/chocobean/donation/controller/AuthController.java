@@ -3,17 +3,20 @@ package com.chocobean.donation.controller;
 import com.chocobean.donation.dto.*;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -123,32 +126,26 @@ public class AuthController {
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<?> refreshAccessToken(
-            @RequestBody Map<String, String> request) {
-
+    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refreshToken");
 
-        // 1. RefreshToken 만료 체크
-        if (jwtTokenUtil.isTokenExpired(refreshToken)) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Refresh token expired");
+        try {
+            // 1. 만료 체크 및 유저 추출을 한 번에 처리
+            String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            // 2. 토큰 유효성 검증 (validateToken 내부에 만료 체크가 포함되어 있음)
+            if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+                // 새 액세스 토큰 생성
+                String newAccessToken = jwtTokenUtil.generateAccessToken(userDetails);
+                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Refresh Token");
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token Expired");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Failed");
         }
-
-        // 2. RefreshToken에서 username 추출
-        String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
-
-        // 3. 사용자 정보 조회
-        UserDetails userDetails =
-                userDetailsService.loadUserByUsername(username);
-
-        // 4. 새로운 AccessToken 발급
-        String newAccessToken =
-                jwtTokenUtil.generateAccessToken(userDetails);
-
-        return ResponseEntity.ok(Map.of(
-                "accessToken", newAccessToken
-        ));
     }
 
     @PatchMapping("/updateUserInfo")

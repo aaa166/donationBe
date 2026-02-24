@@ -52,6 +52,7 @@ public class UserService {
         user.setUserRole(1);
         user.setUserState("A");
         user.setTotalAmount(0L);
+        user.setProvider(Provider.LOCAL);
 
         return userRepository.save(user);
     }
@@ -190,7 +191,7 @@ public class UserService {
 
     //소셜로그인
     @Transactional
-    public User socialLogin(String userName, String userEmail, String userPhone,
+    public User socialLogin(String userId,String userName, String userEmail, String userPhone,
                             String providerId, Provider provider) {
 
         Optional<User> optionalUser = userRepository.findByProviderAndProviderId(provider, providerId);
@@ -199,6 +200,7 @@ public class UserService {
             return optionalUser.get();
         } else {
             User user = new User();
+            user.setUserId(userId);
             user.setUserName(userName);
             user.setUserEmail(userEmail);
             user.setUserPhone(userPhone);

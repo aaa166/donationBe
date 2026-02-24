@@ -31,13 +31,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if ("naver".equals(registrationId)) {
             Map<String, Object> response = (Map<String, Object>) oAuth2User.getAttributes().get("response");
 
+            String id = (String) response.get("id");
             String name = (String) response.get("name");
             String email = (String) response.get("email");
             String providerId = (String) response.get("id");
-            String phone = (String) response.get("mobile");
+            String phone = ((String) response.get("mobile")).replace("-", "");
 
             // UserService 호출: DB 조회/가입 처리
-            User user = userService.socialLogin(name, email, phone, providerId,  Provider.NAVER);
+            User user = userService.socialLogin(id, name, email, phone, providerId,  Provider.NAVER);
 
 
         }
