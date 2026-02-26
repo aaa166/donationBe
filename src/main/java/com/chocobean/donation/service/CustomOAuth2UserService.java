@@ -41,6 +41,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             User user = userService.socialLogin(id, name, email, phone, providerId,  Provider.NAVER);
 
 
+        } else if ("kakao".equals(registrationId)) {
+            Map<String, Object> attributes = oAuth2User.getAttributes();
+            String id = String.valueOf(attributes.get("id"));
+
+            // 계정 정보가 없을 경우를 대비한 방어 코드
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            String nickname = "익명사용자";
+
+            if (kakaoAccount != null) {
+                Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+                if (profile != null && profile.get("nickname") != null) {
+                    nickname = (String) profile.get("nickname");
+                }
+            }
+
+            userService.socialLogin(id, nickname, null, null, id, Provider.KAKAO);
         }
 
         return oAuth2User;

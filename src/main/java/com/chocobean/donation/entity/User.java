@@ -18,7 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userNo;
 
-    @Column(nullable = false)
+    @Column
     private String userName;
 
     @Column(nullable = false, unique = true)
@@ -33,10 +33,10 @@ public class User {
     @Column
     private String userPassword;
 
-    @Column(nullable = false)
+    @Column
     private String userEmail;
 
-    @Column(nullable = false)
+    @Column
     private String userPhone;
 
     @Column(nullable = false)

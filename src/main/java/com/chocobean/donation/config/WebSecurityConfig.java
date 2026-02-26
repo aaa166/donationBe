@@ -23,8 +23,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Map;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -70,7 +73,9 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/public/**",
-                                "/images/**"
+                                "/images/**",
+                                "/favicon.ico",
+                                "/login/oauth2/code/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -84,40 +89,83 @@ public class WebSecurityConfig {
         // JWT 필터 추가
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // OAuth2 Login
+//        // OAuth2 Login
+//        http.oauth2Login(oauth2 -> oauth2
+//                .userInfoEndpoint(userInfo -> userInfo
+//                        .userService(customOAuth2UserService)
+//                )
+//                .successHandler((request, response, authentication) -> {
+//                    // 1. 네이버에서 넘겨준 유저 정보 가져오기
+//                    var oAuth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
+//                    var attributes = oAuth2User.getAttributes();
+//
+//                    // 네이버는 'response'라는 키 안에 실제 정보(id, email 등)가 들어있습니다.
+//                    var responseMap = (java.util.Map<String, Object>) attributes.get("response");
+//
+//                    String providerId = (String) responseMap.get("id");
+//                    String email = (String) responseMap.get("email");
+//                    String name = (String) responseMap.get("name");
+//                    String mobile = (String) responseMap.get("mobile");
+//                    String phone = (mobile != null) ? mobile.replace("-", "") : "";
+//
+//                    UserService userService = context.getBean(UserService.class);
+//
+//                    User user = userService.socialLogin(providerId, name, email, phone, providerId, Provider.NAVER);
+//
+//                    // 3. 토큰 생성을 위한 정보 설정
+//                    String username = user.getUserId();
+//                    String role = (user.getUserRole() == 0) ? "ROLE_ADMIN" : "ROLE_USER";
+//
+//                    // 4. JWT 토큰 발행
+//                    String accessToken = jwtTokenUtil.generateAccessToken(username, role);
+//                    String refreshToken = jwtTokenUtil.generateRefreshToken(username);
+//
+//                    // 5. 프론트엔드 메인 페이지로 리다이렉트 (토큰 포함)
+//                    String targetUrl = org.springframework.web.util.UriComponentsBuilder
+//                            .fromUriString("http://localhost:5173/")
+//                            .queryParam("accessToken", accessToken)
+//                            .queryParam("refreshToken", refreshToken)
+//                            .build().toUriString();
+//
+//                    response.sendRedirect(targetUrl);
+//                })
+//        );
         http.oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService)
                 )
                 .successHandler((request, response, authentication) -> {
-                    // 1. 네이버에서 넘겨준 유저 정보 가져오기
-                    var oAuth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
-                    var attributes = oAuth2User.getAttributes();
+                    String registrationId = ((org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken)authentication).getAuthorizedClientRegistrationId();
+                    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-                    // 네이버는 'response'라는 키 안에 실제 정보(id, email 등)가 들어있습니다.
-                    var responseMap = (java.util.Map<String, Object>) attributes.get("response");
+                    User user = null;
 
-                    String providerId = (String) responseMap.get("id");
-                    String email = (String) responseMap.get("email");
-                    String name = (String) responseMap.get("name");
-                    String mobile = (String) responseMap.get("mobile");
-                    String phone = (mobile != null) ? mobile.replace("-", "") : "";
+                    if ("naver".equals(registrationId)) {
+                        Map<String, Object> responseMap = (Map<String, Object>) oAuth2User.getAttributes().get("response");
+                        user = userService.socialLogin(
+                                (String) responseMap.get("id"),
+                                (String) responseMap.get("name"),
+                                (String) responseMap.get("email"),
+                                ((String) responseMap.get("mobile")).replace("-", ""),
+                                (String) responseMap.get("id"),
+                                Provider.NAVER
+                        );
+                    } else if ("kakao".equals(registrationId)) {
+                        Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
+                        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
-                    // 2. 서비스 레이어 호출 (ApplicationContext를 통해 Bean 가져오기 - 순환참조 방지)
-                    UserService userService = context.getBean(UserService.class);
+                        String providerId = String.valueOf(oAuth2User.getAttributes().get("id"));
+                        String nickname = (String) profile.get("nickname");
 
-                    // [핵심] socialLogin 메서드는 유저가 없으면 DB에 저장(가입)하고, 있으면 조회해서 가져옵니다.
-                    User user = userService.socialLogin(providerId, name, email, phone, providerId, Provider.NAVER);
+                        user = userService.socialLogin(providerId, nickname, null, null, providerId, Provider.KAKAO);                    }
 
-                    // 3. 토큰 생성을 위한 정보 설정
+                    // JWT 발급
                     String username = user.getUserId();
                     String role = (user.getUserRole() == 0) ? "ROLE_ADMIN" : "ROLE_USER";
-
-                    // 4. JWT 토큰 발행
                     String accessToken = jwtTokenUtil.generateAccessToken(username, role);
                     String refreshToken = jwtTokenUtil.generateRefreshToken(username);
 
-                    // 5. 프론트엔드 메인 페이지로 리다이렉트 (토큰 포함)
+                    // 프론트 리다이렉트
                     String targetUrl = org.springframework.web.util.UriComponentsBuilder
                             .fromUriString("http://localhost:5173/")
                             .queryParam("accessToken", accessToken)
@@ -127,6 +175,7 @@ public class WebSecurityConfig {
                     response.sendRedirect(targetUrl);
                 })
         );
+
 
         return http.build();
     }

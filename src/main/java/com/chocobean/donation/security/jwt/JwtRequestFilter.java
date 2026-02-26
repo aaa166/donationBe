@@ -28,7 +28,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
-        if (path.startsWith("/api/auth/refresh") || path.startsWith("/api/auth/login")) {
+        if (path.startsWith("/api/auth/refresh")
+                || path.startsWith("/api/auth/login")
+                || path.equals("/favicon.ico")
+                || path.startsWith("/login/oauth2/code/")) {
             chain.doFilter(request, response);
             return;
         }
@@ -63,10 +66,4 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) {
-//        String path = request.getServletPath();
-//        // public, images 경로는 JWT 필터 무시
-//        return path.startsWith("/images/") || path.startsWith("/public/") || path.startsWith("/api/auth/");
-//    }
 }
