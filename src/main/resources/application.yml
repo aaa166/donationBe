@@ -38,7 +38,7 @@ spring:
             client-secret: WNqpYuqkqd
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
-            scope: "name,email,phone"
+            scope: "name,email,profile_image"
 
           kakao:
             client-id: 53f563574a319fe055fe74d7c9382c8c
@@ -48,6 +48,14 @@ spring:
             client-authentication-method: client_secret_post
             scope:
               - profile_nickname
+
+          google:
+            client-id: ${CHOCOBEAN_GOOGLE_CLIENT_ID}
+            client-secret: ${CHOCOBEAN_GOOGLE_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - email
+              - profile
 
         provider:
           naver:
