@@ -5,6 +5,8 @@ import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,9 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
     private final UserDetailsService userDetailsService;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
 
     @GetMapping("/auth/login")
@@ -54,6 +60,8 @@ public class AuthController {
 
     @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpForm signUpForm) {
+//        System.out.println("Redis value for 'os': " + redisTemplate.opsForValue().get("os"));
+
         try {
             userService.signUp(signUpForm);
             return ResponseEntity.ok("회원가입이 성공적으로 완료되었습니다.");
@@ -226,6 +234,22 @@ public class AuthController {
             return ResponseEntity.status(422).body("mismatch");
         }
         return ResponseEntity.ok("ok");
+    }
+
+    //메일 인증
+    @GetMapping("/sendEmailVerification")
+    public ResponseEntity<?> sendEmailVerification(
+            @RequestParam("email") String email
+    ) {
+        String code = String.valueOf((int)(Math.random() * 900000) + 100000);
+        redisTemplate.opsForValue().set(
+                "email:verify:" + email,
+                code,
+                Duration.ofMinutes(5)
+        );
+        //이메일 발송
+
+        return ResponseEntity.status(409).body("ok");
     }
 
 }

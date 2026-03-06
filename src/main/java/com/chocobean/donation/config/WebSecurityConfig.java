@@ -89,47 +89,6 @@ public class WebSecurityConfig {
         // JWT 필터 추가
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-//        // OAuth2 Login
-//        http.oauth2Login(oauth2 -> oauth2
-//                .userInfoEndpoint(userInfo -> userInfo
-//                        .userService(customOAuth2UserService)
-//                )
-//                .successHandler((request, response, authentication) -> {
-//                    // 1. 네이버에서 넘겨준 유저 정보 가져오기
-//                    var oAuth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
-//                    var attributes = oAuth2User.getAttributes();
-//
-//                    // 네이버는 'response'라는 키 안에 실제 정보(id, email 등)가 들어있습니다.
-//                    var responseMap = (java.util.Map<String, Object>) attributes.get("response");
-//
-//                    String providerId = (String) responseMap.get("id");
-//                    String email = (String) responseMap.get("email");
-//                    String name = (String) responseMap.get("name");
-//                    String mobile = (String) responseMap.get("mobile");
-//                    String phone = (mobile != null) ? mobile.replace("-", "") : "";
-//
-//                    UserService userService = context.getBean(UserService.class);
-//
-//                    User user = userService.socialLogin(providerId, name, email, phone, providerId, Provider.NAVER);
-//
-//                    // 3. 토큰 생성을 위한 정보 설정
-//                    String username = user.getUserId();
-//                    String role = (user.getUserRole() == 0) ? "ROLE_ADMIN" : "ROLE_USER";
-//
-//                    // 4. JWT 토큰 발행
-//                    String accessToken = jwtTokenUtil.generateAccessToken(username, role);
-//                    String refreshToken = jwtTokenUtil.generateRefreshToken(username);
-//
-//                    // 5. 프론트엔드 메인 페이지로 리다이렉트 (토큰 포함)
-//                    String targetUrl = org.springframework.web.util.UriComponentsBuilder
-//                            .fromUriString("http://localhost:5173/")
-//                            .queryParam("accessToken", accessToken)
-//                            .queryParam("refreshToken", refreshToken)
-//                            .build().toUriString();
-//
-//                    response.sendRedirect(targetUrl);
-//                })
-//        );
         http.oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService)

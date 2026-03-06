@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
                 });
 
-        // 🔹 DB 숫자 → Spring Security ROLE 문자열 변환
+        //  DB 숫자 → Spring Security ROLE 문자열 변환
         String roleStr;
         switch (user.getUserRole()) {
             case 0: roleStr = "ROLE_ADMIN"; break;   // 관리자
@@ -35,7 +35,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             default: roleStr = "ROLE_USER"; break;
         }
 
-        // 🔹 [중요 수정] 비밀번호가 null이거나 비어있는지 확인 (소셜 로그인 대응)
+        //  [중요 수정] 비밀번호가 null이거나 비어있는지 확인 (소셜 로그인 대응)
         // Spring Security User 생성자는 비밀번호에 null을 허용하지 않습니다.
         String password = user.getUserPassword();
         if (password == null || password.trim().isEmpty()) {
@@ -44,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             password = "{noop}SOCIAL_AUTH_USER_NO_PASSWORD";
         }
 
-        // 🔹 [중요 수정] 아이디가 null인 경우도 방지
+        //  [중요 수정] 아이디가 null인 경우도 방지
         String username = (user.getUserId() != null) ? user.getUserId() : userId;
 
         return new org.springframework.security.core.userdetails.User(
