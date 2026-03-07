@@ -1,6 +1,7 @@
 package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.*;
+import com.chocobean.donation.service.EmailService;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -31,6 +32,7 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
     private final UserDetailsService userDetailsService;
+    private final EmailService emailService;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -237,7 +239,7 @@ public class AuthController {
     }
 
     //메일 인증
-    @GetMapping("/sendEmailVerification")
+    @GetMapping("/auth/sendEmailVerification")
     public ResponseEntity<?> sendEmailVerification(
             @RequestParam("email") String email
     ) {
@@ -247,9 +249,30 @@ public class AuthController {
                 code,
                 Duration.ofMinutes(5)
         );
+//        System.out.println(code);
+//        System.out.println(email);
+//        System.out.println(redisTemplate.opsForValue().get("email:verify:" + email));
         //이메일 발송
+        try {
+            String subject = "[초코빈] 회원가입 인증번호 안내";
+            String content = "안녕하세요. 초코빈입니다.\n\n" +
+                    "인증번호는 [" + code + "] 입니다.\n" +
+                    "5분 이내에 입력해주세요.";
 
-        return ResponseEntity.status(409).body("ok");
+            emailService.sendEmail(email, subject, content);
+            return ResponseEntity.ok("인증번호가 발송되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("메일 발송에 실패했습니다.");
+        }
+    }
+
+    @GetMapping("/auth/verifyCode")
+    public ResponseEntity<?> verifyCode(@RequestParam String email, @RequestParam String code) {
+        String savedCode = redisTemplate.opsForValue().get("email:verify:" + email);
+        if (savedCode != null && savedCode.equals(code)) {
+            return ResponseEntity.ok("인증 성공");
+        }
+        return ResponseEntity.status(400).body("인증번호가 틀렸거나 만료되었습니다.");
     }
 
 }
