@@ -63,6 +63,11 @@ public class AuthController {
     @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpForm signUpForm) {
 //        System.out.println("Redis value for 'os': " + redisTemplate.opsForValue().get("os"));
+        String status = redisTemplate.opsForValue().get("email:status:" + signUpForm.getUserEmail());
+
+        if (status == null || !status.equals("VERIFIED")) {
+            return ResponseEntity.badRequest().body("이메일 인증이 만료되었거나 완료되지 않았습니다.");
+        }
 
         try {
             userService.signUp(signUpForm);
@@ -238,7 +243,7 @@ public class AuthController {
         return ResponseEntity.ok("ok");
     }
 
-    //메일 인증
+    //메일 발송
     @GetMapping("/auth/sendEmailVerification")
     public ResponseEntity<?> sendEmailVerification(
             @RequestParam("email") String email
@@ -265,11 +270,22 @@ public class AuthController {
             return ResponseEntity.status(500).body("메일 발송에 실패했습니다.");
         }
     }
-
+    //메일 인증
     @GetMapping("/auth/verifyCode")
-    public ResponseEntity<?> verifyCode(@RequestParam String email, @RequestParam String code) {
+    public ResponseEntity<?> verifyCode(
+            @RequestParam String email,
+            @RequestParam String code
+    ) {
         String savedCode = redisTemplate.opsForValue().get("email:verify:" + email);
         if (savedCode != null && savedCode.equals(code)) {
+            redisTemplate.delete("email:verify:" + email);
+
+            redisTemplate.opsForValue().set(
+                    "email:status:" + email,
+                    "VERIFIED",
+                    Duration.ofMinutes(10)
+            );
+
             return ResponseEntity.ok("인증 성공");
         }
         return ResponseEntity.status(400).body("인증번호가 틀렸거나 만료되었습니다.");

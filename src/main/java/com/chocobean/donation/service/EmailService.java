@@ -30,9 +30,9 @@ public class EmailService {
 
         try {
             mailSender.send(message);
-            System.out.println("메일 발송 완료: " + to);
+//            System.out.println("메일 발송 완료: " + to);
         } catch (Exception e) {
-            System.err.println("메일 발송 실패: " + e.getMessage());
+//            System.err.println("메일 발송 실패: " + e.getMessage());
         }
     }
 
