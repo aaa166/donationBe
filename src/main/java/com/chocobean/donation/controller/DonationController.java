@@ -5,6 +5,7 @@ import com.chocobean.donation.dto.DonationState;
 import com.chocobean.donation.dto.DonationView;
 import com.chocobean.donation.dto.InsertDonation;
 import com.chocobean.donation.service.DonationService;
+import com.chocobean.donation.service.FileUploadService;
 import com.chocobean.donation.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ public class DonationController {
 
     private final DonationService donationService;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @GetMapping("/public/donations")
     public List<DonationList> getDonations(@RequestParam(defaultValue = "0") Integer categoryId) {
@@ -70,21 +70,11 @@ public class DonationController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("categories") String categoriesJson
     ) {
-        // 📁 이미지 저장 폴더
-        String uploadDir = "C:/Users/kmcsl/OneDrive/Desktop/KH/연습/img/";
+        // 1️⃣ 파일 처리 (Cloudinary 업로드)
         String imageUrl = null;
-
-        // 1️⃣ 파일 처리
         if (image != null && !image.isEmpty()) {
             try {
-                String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-
-                File saveFile = new File(uploadDir + fileName);
-                image.transferTo(saveFile);
-
-                // DB에 저장할 경로 (프론트에서 접근할 URL 기준)
-                imageUrl = "/images/" + fileName;
-
+                imageUrl = fileUploadService.uploadImage(image);
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.internalServerError().body("FILE_UPLOAD_FAILED");

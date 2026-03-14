@@ -1,23 +1,18 @@
 package com.chocobean.donation.controller;
 
 import com.chocobean.donation.dto.InsertBanner;
-import com.chocobean.donation.dto.InsertDonation;
 import com.chocobean.donation.dto.ReportHistory;
 import com.chocobean.donation.service.BannerService;
+import com.chocobean.donation.service.FileUploadService;
 import com.chocobean.donation.service.UserService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +21,7 @@ public class BannerController {
 
     private final BannerService bannerService;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @PostMapping("/admin/insertBanner")
     public ResponseEntity<?> insertBanner(
@@ -46,10 +42,7 @@ public class BannerController {
         String imageUrl = null;
         if (bannerImg != null && !bannerImg.isEmpty()) {
             try {
-                String fileName = UUID.randomUUID() + "_" + bannerImg.getOriginalFilename();
-                File saveFile = new File("C:/Users/kmcsl/OneDrive/Desktop/KH/연습/img/" + fileName);
-                bannerImg.transferTo(saveFile);
-                imageUrl = "/images/" + fileName;
+                imageUrl = fileUploadService.uploadImage(bannerImg);
             } catch (Exception e) {
                 e.printStackTrace();
                 return ResponseEntity.internalServerError().body("FILE_UPLOAD_FAILED");

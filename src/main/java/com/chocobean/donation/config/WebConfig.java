@@ -2,7 +2,6 @@ package com.chocobean.donation.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -16,10 +15,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*") // 4. 모든 HTTP 헤더를 허용합니다.
                 .allowCredentials(true); // 5. 쿠키/인증 정보 전송을 허용합니다.
     }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:C:/Users/kmcsl/OneDrive/Desktop/KH/연습/img/");
-    }
+    // 이미지는 Cloudinary URL로 직접 접근하므로 로컬 ResourceHandler 불필요
 }
