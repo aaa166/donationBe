@@ -9,23 +9,24 @@ import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 
@@ -41,6 +42,9 @@ public class WebSecurityConfig {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
     private final ApplicationContext context;
+
+    @Value("${cors.allowed-origin:http://localhost:5173}")
+    private String allowedOrigin;
 
     private CustomOAuth2UserService customOAuth2UserService;
 
@@ -95,7 +99,7 @@ public class WebSecurityConfig {
                 )
                 .successHandler((request, response, authentication) -> {
                     // 현재 어떤 소셜로 로그인했는지 ID 확인 (google, naver, kakao)
-                    String registrationId = ((org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken)authentication).getAuthorizedClientRegistrationId();
+                    String registrationId = ((OAuth2AuthenticationToken)authentication).getAuthorizedClientRegistrationId();
                     OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
                     Map<String, Object> attributes = oAuth2User.getAttributes();
 
@@ -136,8 +140,8 @@ public class WebSecurityConfig {
                         String accessToken = jwtTokenUtil.generateAccessToken(username, role);
                         String refreshToken = jwtTokenUtil.generateRefreshToken(username);
 
-                        String targetUrl = org.springframework.web.util.UriComponentsBuilder
-                                .fromUriString("http://localhost:5173/")
+                        String targetUrl = UriComponentsBuilder
+                                .fromUriString(allowedOrigin + "/")
                                 .queryParam("accessToken", accessToken)
                                 .queryParam("refreshToken", refreshToken)
                                 .build().toUriString();
