@@ -127,7 +127,7 @@ public class DonationService {
 
 
     public List<DonationState> getDonationState() {
-        List<Donation> donations = donationRepository.findAll();
+        List<Donation> donations = donationRepository.findAllByOrderByDonationNoAsc();
 
         return donations.stream()
                 .map(this::convertToDonationStateDto) // 각 Entity를 DTO로 변환하는 메서드 호출

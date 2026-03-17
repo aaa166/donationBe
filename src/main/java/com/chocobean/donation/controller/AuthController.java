@@ -57,6 +57,13 @@ public class AuthController {
         final String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails.getUsername());
 
+        // Redis에 refreshToken 저장 (key: refreshToken:{userId}, value: refreshToken, TTL: 15일)
+        redisTemplate.opsForValue().set(
+                "refreshToken:" + userDetails.getUsername(),
+                refreshToken,
+                Duration.ofDays(15)
+        );
+
         return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken));
     }
 
@@ -145,22 +152,43 @@ public class AuthController {
         String refreshToken = request.get("refreshToken");
 
         try {
-            // 1. 만료 체크 및 유저 추출을 한 번에 처리
+            // 1. 토큰에서 userId 추출
             String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            System.out.println(username);
 
-            // 2. 토큰 유효성 검증 (validateToken 내부에 만료 체크가 포함되어 있음)
-            if (jwtTokenUtil.validateToken(refreshToken, userDetails)) {
-                // 새 액세스 토큰 생성
-                String newAccessToken = jwtTokenUtil.generateAccessToken(userDetails);
-                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+            // 2. Redis에서 저장된 refreshToken 조회
+            String savedToken = redisTemplate.opsForValue().get("refreshToken:" + username);
+
+            // 3. Redis 토큰과 전달받은 토큰 비교
+            if (savedToken == null || !savedToken.equals(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Refresh Token");
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Refresh Token");
+
+            // 4. JWT 자체 유효성 검증
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Refresh Token");
+            }
+
+            // 5. 새 accessToken 발급
+            String newAccessToken = jwtTokenUtil.generateAccessToken(userDetails);
+            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+
         } catch (ExpiredJwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token Expired");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication Failed");
         }
+    }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
+        }
+        // Redis에서 refreshToken 삭제 → 해당 토큰으로 재발급 불가
+        redisTemplate.delete("refreshToken:" + userDetails.getUsername());
+        return ResponseEntity.ok("로그아웃 완료");
     }
 
     @PatchMapping("/updateUserInfo")

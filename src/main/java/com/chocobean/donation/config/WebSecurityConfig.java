@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -28,6 +29,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -47,6 +49,9 @@ public class WebSecurityConfig {
     private String allowedOrigin;
 
     private CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     // Lazy 주입으로 순환 참조 방지
     @Autowired
@@ -139,6 +144,13 @@ public class WebSecurityConfig {
 
                         String accessToken = jwtTokenUtil.generateAccessToken(username, role);
                         String refreshToken = jwtTokenUtil.generateRefreshToken(username);
+
+                        // Redis에 refreshToken 저장 (TTL: 15일)
+                        redisTemplate.opsForValue().set(
+                                "refreshToken:" + username,
+                                refreshToken,
+                                Duration.ofDays(15)
+                        );
 
                         String targetUrl = UriComponentsBuilder
                                 .fromUriString(allowedOrigin + "/")

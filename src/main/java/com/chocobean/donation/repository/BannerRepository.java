@@ -17,4 +17,6 @@ public interface BannerRepository extends JpaRepository<com.chocobean.donation.e
             "WHERE b.bannerStartDate <= :today " +
             "AND b.bannerDeadlineDate >= :today")
     List<Banner> findActiveBanners(@Param("today") LocalDate today);
+
+    List<Banner> findAllByOrderByBannerNoAsc();
 }

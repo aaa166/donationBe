@@ -19,7 +19,7 @@ public class BannerService {
 
     @Transactional
     public List<InsertBanner> findAll() {
-        List<Banner> bannerEntities = bannerRepository.findAll();
+        List<Banner> bannerEntities = bannerRepository.findAllByOrderByBannerNoAsc();
         List<InsertBanner> banners = bannerEntities.stream()
                 .map(b -> new InsertBanner(b))
                 .collect(Collectors.toList());

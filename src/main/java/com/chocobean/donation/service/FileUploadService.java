@@ -19,8 +19,9 @@ public class FileUploadService {
         try {
             Map<?, ?> result = cloudinary.uploader().upload(
                     file.getBytes(),
-                    ObjectUtils.asMap("folder", "donation")
+                    ObjectUtils.asMap("folder", "chocobean")
             );
+//            System.out.println((String) result.get("secure_url"));
             return (String) result.get("secure_url");
         } catch (IOException e) {
             throw new RuntimeException("이미지 업로드에 실패했습니다.", e);

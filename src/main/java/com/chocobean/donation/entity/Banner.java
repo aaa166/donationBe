@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Banner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long bannerNo;
+    private Long bannerNo;
     @Column(nullable = false)
     private String bannerTitle;
     @Column(nullable = false)

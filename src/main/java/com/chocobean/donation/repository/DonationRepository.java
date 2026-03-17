@@ -33,4 +33,6 @@ public interface DonationRepository extends JpaRepository<com.chocobean.donation
     Optional<Donation> findByDonationNo(Long donationNo);
 
     Donation getDonationByDonationNo(Long donationNo);
+
+    List<Donation> findAllByOrderByDonationNoAsc();
 }
