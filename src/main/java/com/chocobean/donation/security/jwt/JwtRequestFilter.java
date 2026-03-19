@@ -4,6 +4,7 @@ import com.chocobean.donation.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,17 +37,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String header = request.getHeader("Authorization");
-        String username = null;
         String jwtToken = null;
+        String username = null;
 
-        if (header != null && header.startsWith("Bearer ")) {
-            jwtToken = header.substring(7);
+        // 쿠키에서 accessToken 읽기
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // 쿠키에 없으면 Authorization 헤더에서 읽기 (fallback)
+        if (jwtToken == null) {
+            String header = request.getHeader("Authorization");
+            if (header != null && header.startsWith("Bearer ")) {
+                jwtToken = header.substring(7);
+            }
+        }
+
+        if (jwtToken != null) {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException e) {
                 logger.warn("Access Token 만료됨");
-                // 여기서 response.setStatus(401)을 하지 않고 그대로 넘겨야 프론트 인터셉터가 refresh를 호출함
             } catch (Exception e) {
                 logger.error("JWT 로직 에러");
             }

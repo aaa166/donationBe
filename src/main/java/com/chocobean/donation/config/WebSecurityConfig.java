@@ -27,7 +27,8 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 
 import java.time.Duration;
 import java.util.Map;
@@ -152,13 +153,23 @@ public class WebSecurityConfig {
                                 Duration.ofDays(15)
                         );
 
-                        String targetUrl = UriComponentsBuilder
-                                .fromUriString(allowedOrigin + "/")
-                                .queryParam("accessToken", accessToken)
-                                .queryParam("refreshToken", refreshToken)
-                                .build().toUriString();
+                        // HttpOnly 쿠키로 토큰 전달
+                        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                                .httpOnly(true)
+                                .path("/")
+                                .maxAge(Duration.ofMinutes(15))
+                                .sameSite("Lax")
+                                .build();
+                        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                                .httpOnly(true)
+                                .path("/")
+                                .maxAge(Duration.ofDays(15))
+                                .sameSite("Lax")
+                                .build();
 
-                        response.sendRedirect(targetUrl);
+                        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+                        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+                        response.sendRedirect(allowedOrigin + "/login?loginSuccess=true");
                     }
                 })
         );

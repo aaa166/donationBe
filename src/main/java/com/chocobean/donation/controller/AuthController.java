@@ -5,22 +5,25 @@ import com.chocobean.donation.service.EmailService;
 import com.chocobean.donation.service.UserService;
 import com.chocobean.donation.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +46,17 @@ public class AuthController {
         return ResponseEntity.ok("good!!");
     }
 
+    // 현재 로그인 상태 확인 (쿠키의 accessToken 유효 여부 확인용)
+    @GetMapping("/auth/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NOT_LOGGED_IN");
+        }
+        return ResponseEntity.ok(Map.of("userId", userDetails.getUsername()));
+    }
+
     @PostMapping("/auth/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLogin userLogin, HttpServletResponse response) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userLogin.getId(), userLogin.getPassword())
@@ -57,14 +69,31 @@ public class AuthController {
         final String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails.getUsername());
 
-        // Redis에 refreshToken 저장 (key: refreshToken:{userId}, value: refreshToken, TTL: 15일)
+        // Redis에 refreshToken 저장 (TTL: 15일)
         redisTemplate.opsForValue().set(
                 "refreshToken:" + userDetails.getUsername(),
                 refreshToken,
                 Duration.ofDays(15)
         );
 
-        return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken));
+        // HttpOnly 쿠키로 토큰 전달
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofMinutes(15))
+                .sameSite("Lax")
+                .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofDays(15))
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok("로그인 성공");
     }
 
     @PostMapping("/auth/signup")
@@ -148,31 +177,50 @@ public class AuthController {
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
+    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        // 쿠키에서 refreshToken 읽기
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No Refresh Token");
+        }
 
         try {
             // 1. 토큰에서 userId 추출
             String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
-            System.out.println(username);
 
-            // 2. Redis에서 저장된 refreshToken 조회
+            // 2. Redis에서 저장된 refreshToken 조회 및 비교
             String savedToken = redisTemplate.opsForValue().get("refreshToken:" + username);
-
-            // 3. Redis 토큰과 전달받은 토큰 비교
             if (savedToken == null || !savedToken.equals(refreshToken)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Refresh Token");
             }
 
-            // 4. JWT 자체 유효성 검증
+            // 3. JWT 자체 유효성 검증
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (!jwtTokenUtil.validateToken(refreshToken, userDetails)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Refresh Token");
             }
 
-            // 5. 새 accessToken 발급
+            // 4. 새 accessToken 쿠키 발급
             String newAccessToken = jwtTokenUtil.generateAccessToken(userDetails);
-            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+            ResponseCookie accessCookie = ResponseCookie.from("accessToken", newAccessToken)
+                    .httpOnly(true)
+                    .path("/")
+                    .maxAge(Duration.ofMinutes(15))
+                    .sameSite("Lax")
+                    .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+
+            return ResponseEntity.ok("Token Refreshed");
 
         } catch (ExpiredJwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh Token Expired");
@@ -182,12 +230,31 @@ public class AuthController {
     }
 
     @PostMapping("/auth/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response) {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
         }
-        // Redis에서 refreshToken 삭제 → 해당 토큰으로 재발급 불가
+
+        // Redis에서 refreshToken 삭제
         redisTemplate.delete("refreshToken:" + userDetails.getUsername());
+
+        // 쿠키 만료 처리
+        ResponseCookie expiredAccess = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        ResponseCookie expiredRefresh = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredAccess.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredRefresh.toString());
+
         return ResponseEntity.ok("로그아웃 완료");
     }
 
