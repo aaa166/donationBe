@@ -207,42 +207,30 @@ public class AuthController {
 
     }
     //중복검사
-    @GetMapping("/duplicateIdCheck")
+    @GetMapping("/auth/duplicateIdCheck")
     public ResponseEntity<?> duplicateIdCheck(
-            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("userId") String userId
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         if (userService.duplicateIdCheck(userId)){
             return ResponseEntity.ok("ok");
         }else {
             return ResponseEntity.status(409).body("DUPLICATE_ID");
         }
     }
-    @GetMapping("/duplicateEmailCheck")
+    @GetMapping("/auth/duplicateEmailCheck")
     public ResponseEntity<?> duplicateEmailCheck(
-            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("email") String email
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         if (userService.duplicateEmailCheck(email)){
             return ResponseEntity.ok("ok");
         }else {
             return ResponseEntity.status(409).body("DUPLICATE_EMAIL");
         }
     }
-    @GetMapping("/duplicatePhoneCheck")
+    @GetMapping("/auth/duplicatePhoneCheck")
     public ResponseEntity<?> duplicatePhoneCheck(
-            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("phone") String phone
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         if (userService.duplicatePhoneCheck(phone)){
             return ResponseEntity.ok("ok");
         }else {

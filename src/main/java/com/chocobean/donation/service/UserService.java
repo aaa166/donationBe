@@ -200,9 +200,9 @@ public class UserService {
             return optionalUser.get();
         } else {
             User user = new User();
-            if (Provider.NAVER == provider)   user.setUserId("N)" + userId);
-            else if(Provider.KAKAO == provider)   user.setUserId("K)" + userId);
-            else   user.setUserId("G)" + userId);
+            if (Provider.NAVER == provider)   user.setUserId("N_" + userId);
+            else if(Provider.KAKAO == provider)   user.setUserId("K_" + userId);
+            else   user.setUserId("G_" + userId);
             user.setUserName(userName);
             user.setUserEmail(userEmail);
             user.setUserPhone(userPhone);
