@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.userNo FROM User u WHERE u.userId = :userId")
     Long getUserNoByUserId(@Param("userId") String userId);
 
-    User findByUserNo(Long userNo);
+    Optional<User> findByUserNo(Long userNo);
 
     @Modifying
     @Query("UPDATE User u SET u.userState = :state WHERE u.userNo = :userNo")

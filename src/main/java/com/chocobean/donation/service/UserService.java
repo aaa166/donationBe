@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -104,9 +105,9 @@ public class UserService {
     }
     @Transactional
     public void addUserAmount(Long userNo, Long amount) {
-        User user = userRepository.findByUserNo(userNo);
+        User user = userRepository.findByUserNo(userNo)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
         user.setTotalAmount(user.getTotalAmount() + amount);
-
     }
 
     @Transactional
@@ -168,7 +169,8 @@ public class UserService {
 
     @Transactional
     public String updatePassword(Map<String, String> inputData, Long userNo) {
-        User user = userRepository.findByUserNo(userNo);
+        User user = userRepository.findByUserNo(userNo)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
         //비밀번호 확인
         if (!passwordEncoder.matches(inputData.get("currentPassword"),user.getUserPassword())) {
             return "unauthorized";

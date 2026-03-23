@@ -8,6 +8,7 @@ import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.ReportRepository;
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,8 @@ public class ReportService {
     public void insertReport(Long userNo, InsertReport reportData) {
         Report report = new Report();
 
-        User reporter = userRepository.findByUserNo(userNo);
+        User reporter = userRepository.findByUserNo(userNo)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
         int role = reporter.getUserRole();
 
         report.setReporterNo(userNo);
