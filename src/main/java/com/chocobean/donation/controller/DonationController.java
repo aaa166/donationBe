@@ -63,13 +63,15 @@ public class DonationController {
         }
     }
 
-    @PostMapping("/public/insertDonation")
+    @PostMapping("/insertDonation")
     public ResponseEntity<?> insertDonation(
             @ModelAttribute InsertDonation insertDonation,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("categories") String categoriesJson
     ) {
+        if (userDetails == null) return ResponseEntity.status(401).body("UNAUTHORIZED");
+
         // 1️⃣ 파일 처리 (Cloudinary 업로드)
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
