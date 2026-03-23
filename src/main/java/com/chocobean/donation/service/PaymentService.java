@@ -47,23 +47,27 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
-    public void donate(Long userNo, Donate donate) {
-
-
-
+    @Transactional
+    public void processPayment(Long userNo, Donate donate) {
         User user = userRepository.findById(userNo)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Donation donation = donationRepository.findById(donate.getDonationNo())
                 .orElseThrow(() -> new RuntimeException("Donation not found"));
 
+        // Payment 저장
         Payment payment = new Payment();
         payment.setPayAmount(donate.getPayAmount());
         payment.setPayComment(donate.getPayComment());
         payment.setPayDate(LocalDate.now());
         payment.setUser(user);
         payment.setDonation(donation);
-
         paymentRepository.save(payment);
+
+        // Donation 현재 모금액 증가
+        donation.setDonationCurrentAmount(donation.getDonationCurrentAmount() + donate.getPayAmount());
+
+        // User 총 기부금액 증가
+        user.setTotalAmount(user.getTotalAmount() + donate.getPayAmount());
     }
 }
