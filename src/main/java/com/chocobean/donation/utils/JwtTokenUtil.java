@@ -100,8 +100,9 @@ public class JwtTokenUtil {
 
     // 토큰 만료 확인
     public boolean isTokenExpired(String token) {
-        return getExpirationDateFromToken(token)
-                .before(new Date());
+        Date expiration = getExpirationDateFromToken(token);
+        if (expiration == null) return false;
+        return expiration.before(new Date());
     }
 
     // 토큰 유효성 검증

@@ -183,6 +183,8 @@ public class WebSecurityConfig {
                                                 response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
                                                 response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
                                                 response.sendRedirect(allowedOrigin + "/login?loginSuccess=true");
+                                        } else {
+                                                response.sendRedirect(allowedOrigin + "/login?error=social_login_failed");
                                         }
                                 }));
 

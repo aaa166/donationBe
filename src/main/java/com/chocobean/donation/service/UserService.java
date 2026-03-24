@@ -94,7 +94,7 @@ public class UserService {
     @Transactional
     public int getRoleByUserName(String userId) {
         User user= userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. ID: " + userId));;
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다. ID: " + userId));
         int role = user.getUserRole();
 
         return role;
@@ -135,8 +135,16 @@ public class UserService {
 
     @Transactional
     public void changeUserState(Map<String, Object> userData) {
-        String userState = (String) userData.get("userState");
-        Long userNo = Long.valueOf(userData.get("userNo").toString());
+        Object userNoObj = userData.get("userNo");
+        if (userNoObj == null) {
+            throw new IllegalArgumentException("userNo가 없습니다.");
+        }
+        Object userStateObj = userData.get("userState");
+        if (userStateObj == null) {
+            throw new IllegalArgumentException("userState가 없습니다.");
+        }
+        Long userNo = Long.valueOf(userNoObj.toString());
+        String userState = userStateObj.toString();
         if (Objects.equals(userState, "A")){
             userRepository.updateUserState(userNo, "I");
         }else{

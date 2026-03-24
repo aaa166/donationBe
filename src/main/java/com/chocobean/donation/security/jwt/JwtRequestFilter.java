@@ -2,6 +2,9 @@ package com.chocobean.donation.security.jwt;
 
 import com.chocobean.donation.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -63,9 +66,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException e) {
-                logger.warn("Access Token 만료됨");
-            } catch (Exception e) {
-                logger.error("JWT 로직 에러");
+                logger.warn("Access Token 만료: " + e.getMessage());
+            } catch (SignatureException e) {
+                logger.error("JWT 서명 불일치 (변조 의심): " + e.getMessage());
+            } catch (MalformedJwtException e) {
+                logger.error("잘못된 JWT 형식: " + e.getMessage());
+            } catch (UnsupportedJwtException e) {
+                logger.error("지원하지 않는 JWT 형식: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                logger.error("JWT 토큰이 비어있음: " + e.getMessage());
             }
         }
 
