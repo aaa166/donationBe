@@ -113,16 +113,26 @@ public class WebSecurityConfig {
                                         if ("naver".equals(registrationId)) {
                                                 Map<String, Object> responseMap = (Map<String, Object>) attributes
                                                                 .get("response");
+                                                if (responseMap == null) {
+                                                        response.sendRedirect(allowedOrigin + "/login?error=naver_response_null");
+                                                        return;
+                                                }
+                                                String mobileRaw = (String) responseMap.get("mobile");
+                                                String mobile = (mobileRaw != null) ? mobileRaw.replace("-", "") : null;
                                                 user = userService.socialLogin(
                                                                 (String) responseMap.get("id"),
                                                                 (String) responseMap.get("name"),
                                                                 (String) responseMap.get("email"),
-                                                                ((String) responseMap.get("mobile")).replace("-", ""),
+                                                                mobile,
                                                                 (String) responseMap.get("id"),
                                                                 Provider.NAVER);
                                         } else if ("kakao".equals(registrationId)) {
                                                 Map<String, Object> kakaoAccount = (Map<String, Object>) attributes
                                                                 .get("kakao_account");
+                                                if (kakaoAccount == null) {
+                                                        response.sendRedirect(allowedOrigin + "/login?error=kakao_account_null");
+                                                        return;
+                                                }
                                                 Map<String, Object> profile = (Map<String, Object>) kakaoAccount
                                                                 .get("profile");
                                                 String providerId = String.valueOf(attributes.get("id"));
