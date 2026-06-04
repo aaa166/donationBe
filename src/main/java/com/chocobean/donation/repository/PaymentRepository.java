@@ -18,12 +18,19 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findPaymentsWithDonationByUserNo(@Param("userNo") Long userNo);
 
 
-    @Query(value = "SELECT p.* " +
-            "FROM payment p " +
-            "LEFT JOIN report r ON r.type_no = p.pay_no AND r.report_type = 'payComment' " +
-            "WHERE p.donation_no = :donationNo " +
-            "AND (r.report_status IS NULL OR r.report_status <> 'R') " +
-            "ORDER BY p.pay_date DESC",
-            nativeQuery = true)
+    @Query("""
+            SELECT p
+            FROM Payment p
+            JOIN FETCH p.user
+            WHERE p.donation.donationNo = :donationNo
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM Report r
+                  WHERE r.typeNo = p.payNo
+                    AND r.reportType = 'payComment'
+                    AND r.reportStatus = 'R'
+              )
+            ORDER BY p.payDate DESC
+            """)
     List<Payment> findPaymentsWithUserByDonationNo(@Param("donationNo") Long donationNo);
 }
