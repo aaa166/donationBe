@@ -327,7 +327,7 @@ public class AuthController {
     }
 
     //메일 발송
-    @GetMapping("/auth/sendEmailVerification")
+    @PostMapping("/auth/sendEmailVerification")
     public ResponseEntity<?> sendEmailVerification(
             @RequestParam("email") String email
     ) {
@@ -354,7 +354,7 @@ public class AuthController {
         }
     }
     //메일 인증
-    @GetMapping("/auth/verifyCode")
+    @PostMapping("/auth/verifyCode")
     public ResponseEntity<?> verifyCode(
             @RequestParam String email,
             @RequestParam String code
