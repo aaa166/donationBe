@@ -54,4 +54,25 @@ public interface ReportRepository extends JpaRepository<Report,Long> {
     @Query("SELECT p.donation.donationNo FROM Payment p WHERE p.payNo = :typeNo")
     Long findDonationNoByTypeNo(@Param("typeNo") Long typeNo);
 
+    @Query("""
+        SELECT new com.chocobean.donation.dto.ReportState(
+            r.reportNo,
+            ru.userId,
+            rpu.userId,
+            au.userId,
+            r.reportDetails,
+            r.reportStatus,
+            r.reportDate,
+            r.reportType,
+            r.typeNo,
+            d.donationNo
+        )
+        FROM Report r
+        LEFT JOIN User ru ON ru.userNo = r.reporterNo
+        LEFT JOIN User rpu ON rpu.userNo = r.reportedNo
+        LEFT JOIN User au ON au.userNo = r.adminNo
+        LEFT JOIN Payment p ON p.payNo = r.typeNo
+        LEFT JOIN Donation d ON d.donationNo = p.donation.donationNo
+    """)
+    List<ReportState> findAllReportStates();
 }

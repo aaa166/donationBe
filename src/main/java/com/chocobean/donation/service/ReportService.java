@@ -54,29 +54,7 @@ public class ReportService {
     }
     @Transactional
     public List<ReportState> findReports() {
-
-        return reportRepository.findAll().stream()
-                .map(report -> {
-                    String reporterId = userRepository.findUserIdByUserNo(report.getReporterNo());
-                    String reportedId = userRepository.findUserIdByUserNo(report.getReportedNo());
-                    String adminId = report.getAdminNo() != null ? userRepository.findUserIdByUserNo(report.getAdminNo()) : null;
-
-                    Long donationNo = reportRepository.findDonationNoByTypeNo(report.getTypeNo());
-
-                    return new ReportState(
-                            report.getReportNo(),
-                            reporterId,
-                            reportedId,
-                            adminId,
-                            report.getReportDetails(),
-                            report.getReportStatus(),
-                            report.getReportDate(),
-                            report.getReportType(),
-                            report.getTypeNo(),
-                            donationNo
-                    );
-                })
-                .collect(Collectors.toList());
+        return reportRepository.findAllReportStates();
     }
 
     @Transactional
