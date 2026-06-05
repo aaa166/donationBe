@@ -39,6 +39,10 @@ public class PaymentController {
         }
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
+        if (donate.getPayAmount() == null || donate.getPayAmount() <= 0) {
+            return ResponseEntity.badRequest().body("INVALID_PAY_AMOUNT");
+        }
+
         paymentService.processPayment(userNo, donate);
 
         return ResponseEntity.ok("ok");

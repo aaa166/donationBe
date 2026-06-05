@@ -49,6 +49,10 @@ public class PaymentService {
 
     @Transactional
     public void processPayment(Long userNo, Donate donate) {
+        if (donate.getPayAmount() == null || donate.getPayAmount() <= 0) {
+            throw new IllegalArgumentException("Pay amount must be greater than zero");
+        }
+
         User user = userRepository.findById(userNo)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
