@@ -72,6 +72,12 @@ public class DonationController {
     ) {
         if (userDetails == null) return ResponseEntity.status(401).body("UNAUTHORIZED");
 
+        String userName = userDetails.getUsername();
+        int role = userService.getRoleByUserName(userName);
+        if (role == 1) {
+            return ResponseEntity.status(403).body("NO_PERMISSION");
+        }
+
         // 1️⃣ 파일 처리 (Cloudinary 업로드)
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
