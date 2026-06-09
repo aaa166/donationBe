@@ -1,6 +1,7 @@
 package com.chocobean.donation.repository;
 
 import com.chocobean.donation.dto.ReportHistory;
+import com.chocobean.donation.dto.ReportState;
 import com.chocobean.donation.entity.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
