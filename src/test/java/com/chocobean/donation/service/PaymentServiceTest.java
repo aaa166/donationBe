@@ -48,7 +48,7 @@ class PaymentServiceTest {
 
         @Test
         @DisplayName("기부글 ID로 조회 시 연관된 후원 댓글 DTO(PayComment) 목록을 정상 반환한다")
-        void success_findPayCommentsByDonationNo() {
+        void 후원댓글조회_성공() {
             // Given
             Long donationNo = 1L;
 
@@ -95,7 +95,7 @@ class PaymentServiceTest {
 
         @Test
         @DisplayName("성공: 결제가 정상 처리되면 결제 내역이 저장되고 기부금과 사용자 총기부액이 증가한다")
-        void success_processPayment() {
+        void 결제처리_성공() {
             // Given
             Long userNo = 10L;
             Donate donateDto = createDonateDto(1L, 50000L, "응원합니다");
@@ -125,7 +125,7 @@ class PaymentServiceTest {
 
         @Test
         @DisplayName("실패: 결제 금액이 null이거나 0 이하이면 IllegalArgumentException을 던진다")
-        void fail_whenAmountIsZeroOrNegative() {
+        void 결제처리_실패_금액오류() {
             // Given
             Long userNo = 10L;
             Donate zeroAmountDonate = createDonateDto(1L, 0L, "0원 결제");
@@ -145,7 +145,7 @@ class PaymentServiceTest {
 
         @Test
         @DisplayName("실패: 존재하지 않는 회원 번호인 경우 RuntimeException(User not found)을 던진다")
-        void fail_whenUserNotFound() {
+        void 결제처리_실패_존재하지않는_유저() {
             // Given
             Long nonExistentUserNo = 999L;
             Donate donateDto = createDonateDto(1L, 50000L, "기부");
@@ -163,7 +163,7 @@ class PaymentServiceTest {
 
         @Test
         @DisplayName("실패: 존재하지 않는 기부글 번호인 경우 RuntimeException(Donation not found)을 던진다")
-        void fail_whenDonationNotFound() {
+        void 결제처리_실패_존재하지않는_기부글() {
             // Given
             Long userNo = 10L;
             Donate donateDto = createDonateDto(999L, 50000L, "기부");

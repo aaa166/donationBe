@@ -55,7 +55,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("성공: 일반 사용자(role != 0)가 신고하면 대기 상태('P')로 저장된다")
-        void success_insertReport_byNormalUser() {
+        void 신고등록_성공_일반사용자() {
             // Given
             Long reporterNo = 10L;
             InsertReport reportData = createInsertReportDto();
@@ -86,7 +86,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("성공: 관리자(role == 0)가 신고하면 즉시 승인/처리 상태('R') 및 어드민 번호가 지정되어 저장된다")
-        void success_insertReport_byAdmin() {
+        void 신고등록_성공_관리자() {
             // Given
             Long adminNo = 1L;
             InsertReport reportData = createInsertReportDto();
@@ -113,7 +113,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("실패: 신고 주체인 유저 번호가 존재하지 않는다면 EntityNotFoundException을 던진다")
-        void fail_whenUserNotFound() {
+        void 신고등록_실패_존재하지않는_유저() {
             // Given
             Long nonExistentUserNo = 999L;
             InsertReport reportData = createInsertReportDto();
@@ -135,7 +135,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("신고 대상 유저 번호로 해당 유저의 처리 완료(반려) 신고 히스토리 목록을 반환한다")
-        void success_findReportHistory() {
+        void 신고히스토리조회_성공() {
             // Given
             Long userNo = 20L;
             ReportHistory history = new ReportHistory(1L, 10L, 20L, 1L, "신고내용", "R", LocalDate.now(), "D", 100L);
@@ -157,7 +157,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("전체 신고 건들에 대한 상태 정보 목록(ReportState DTO)을 반환한다")
-        void success_findReports() {
+        void 전체신고조회_성공() {
             // Given
             ReportState state = new ReportState(1L, "reporterId", "reportedId", "adminId", "상세내용", "P", LocalDate.now(), "D", 100L, 50L);
             given(reportRepository.findAllReportStates()).willReturn(List.of(state));
@@ -178,7 +178,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("특정 타입 및 유형 번호로 이미 등록된 신고가 존재하는지 여부를 조회하여 반환한다")
-        void success_getReportStatusByReportData() {
+        void 신고상태조회_성공() {
             // Given
             InsertReport reportData = new InsertReport();
             reportData.setTypeNo(100L);
@@ -201,7 +201,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("어드민 ID로 번호를 조회하여 해당 신고를 승인(C) 상태로 업데이트한다")
-        void success_changeReportStateC() {
+        void 신고승인상태로변경_성공() {
             // Given
             Long reportNo = 1L;
             String adminId = "admin123";
@@ -224,7 +224,7 @@ class ReportServiceTest {
 
         @Test
         @DisplayName("어드민 ID로 번호를 조회하여 해당 신고를 반려(R) 상태로 업데이트한다")
-        void success_changeReportStateR() {
+        void 신고반려상태로변경_성공() {
             // Given
             Long reportNo = 1L;
             String adminId = "admin123";
