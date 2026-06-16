@@ -49,18 +49,10 @@ public class ReportController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("userNo") Long userNo
     ) {
-        String userId = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userId);
-
         List<ReportHistory> reportHistories = reportService.findReportHistory(userNo);
         System.out.println(reportHistories);
 
-
-        if (role == 0){
-            return ResponseEntity.ok(reportHistories);
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        return ResponseEntity.ok(reportHistories);
     }
 
     //report페이지
@@ -68,17 +60,9 @@ public class ReportController {
     public ResponseEntity<?> findReportState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userId = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userId);
-
         List<ReportState> reports = reportService.findReports();
 
-
-        if (role == 0){
-            return ResponseEntity.ok(reports);
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        return ResponseEntity.ok(reports);
     }
 
     @PostMapping("/admin/changeReportStateC")
@@ -87,15 +71,9 @@ public class ReportController {
             @RequestBody Map<String, Long> body
     ) {
         String userId = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userId);
-
-        if (role == 0) {
-            Long reportNo = body.get("reportNo");
-            reportService.changeReportStateC(reportNo, userId);
-            return ResponseEntity.ok("ok");
-        } else {
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        Long reportNo = body.get("reportNo");
+        reportService.changeReportStateC(reportNo, userId);
+        return ResponseEntity.ok("ok");
     }
 
     @PostMapping("/admin/changeReportStateR")
@@ -104,16 +82,9 @@ public class ReportController {
             @RequestBody Map<String, Long> body
     ) {
         String userId = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userId);
-
-
-        if (role == 0){
-            Long reportNo = body.get("reportNo");
-            reportService.changeReportStateR(reportNo,userId);
-            return ResponseEntity.ok("ok");
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        Long reportNo = body.get("reportNo");
+        reportService.changeReportStateR(reportNo,userId);
+        return ResponseEntity.ok("ok");
     }
 
 }

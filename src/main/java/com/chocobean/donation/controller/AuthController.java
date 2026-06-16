@@ -137,18 +137,8 @@ public class AuthController {
     public ResponseEntity<?> getUserState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userName = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userName);
-
-        System.out.println(role);
-
         List<UserState> userState = userService.getUserState();
-
-        if (role == 0){
-            return ResponseEntity.ok(userState);
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        return ResponseEntity.ok(userState);
     }
 
     @PostMapping("/admin/changeUserState")
@@ -156,18 +146,11 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, Object> userData
     ) {
-        String userName = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userName);
-
 //        String userState = (String) userData.get("userState");
 //        Long userNo = Long.valueOf(userData.get("userNo").toString());
 
-        if (role == 0){
-            userService.changeUserState(userData);
-            return ResponseEntity.ok("상태 변경");
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        userService.changeUserState(userData);
+        return ResponseEntity.ok("상태 변경");
     }
 
     @PostMapping("/auth/refresh")

@@ -30,12 +30,6 @@ public class BannerController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        String userId = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userId);
-        if (role != 0) {
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
-
         String imageUrl = null;
         if (bannerImg != null && !bannerImg.isEmpty()) {
             try {
@@ -56,17 +50,8 @@ public class BannerController {
     public ResponseEntity<?> bannerState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        String userId = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userId);
-
-
-        if (role == 0) {
-            List<InsertBanner> banners = bannerService.findAll();
-            return ResponseEntity.ok(banners);
-        }else {
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        List<InsertBanner> banners = bannerService.findAll();
+        return ResponseEntity.ok(banners);
     }
 
     @GetMapping("/public/mainBanner")

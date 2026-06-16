@@ -120,15 +120,8 @@ public class DonationController {
     public ResponseEntity<?> getDonationState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        String userName = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userName);
         List<DonationState> donationState = donationService.getDonationState();
-
-        if (role == 0){
-            return ResponseEntity.ok(donationState);
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        return ResponseEntity.ok(donationState);
     }
 
     @PatchMapping("/admin/updateDonationState/{donationNo}")
@@ -136,19 +129,9 @@ public class DonationController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("donationNo") Long no
     ) {
-        String userName = userDetails.getUsername();
-        int role = userService.getRoleByUserName(userName);
-
-
-
-        System.out.println(role);
-        if (role == 0){
-            boolean isVisible = donationService.getDonationStateByNo(no);
-            donationService.updateDonationState(no, isVisible);
-            return ResponseEntity.ok("ok");
-        }else{
-            return ResponseEntity.status(403).body("NO_PERMISSION");
-        }
+        boolean isVisible = donationService.getDonationStateByNo(no);
+        donationService.updateDonationState(no, isVisible);
+        return ResponseEntity.ok("ok");
     }
 
 }
