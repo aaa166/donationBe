@@ -26,9 +26,6 @@ public class ReportController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody InsertReport reportData
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
 
@@ -52,9 +49,6 @@ public class ReportController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("userNo") Long userNo
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);
 
@@ -74,9 +68,6 @@ public class ReportController {
     public ResponseEntity<?> findReportState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);
 
@@ -95,9 +86,6 @@ public class ReportController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, Long> body
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);
 
@@ -115,9 +103,6 @@ public class ReportController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, Long> body
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);
 

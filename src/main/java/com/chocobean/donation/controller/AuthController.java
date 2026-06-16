@@ -137,9 +137,6 @@ public class AuthController {
     public ResponseEntity<?> getUserState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
 
@@ -159,9 +156,6 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, Object> userData
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
 
@@ -263,9 +257,6 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody UserResponse userResponse
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
         userService.updateUserInfo(userNo,userResponse);
@@ -310,9 +301,6 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Map<String, String> inputData
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
 

@@ -34,9 +34,6 @@ public class PaymentController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody Donate donate
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userId = userDetails.getUsername();
         Long userNo = userService.getUserNoByUserId(userId);
         if (donate.getPayAmount() == null || donate.getPayAmount() <= 0) {

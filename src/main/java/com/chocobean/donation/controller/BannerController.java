@@ -29,9 +29,6 @@ public class BannerController {
             @RequestPart(value = "bannerImg", required = false) MultipartFile bannerImg,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
 
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);
@@ -59,9 +56,6 @@ public class BannerController {
     public ResponseEntity<?> bannerState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
 
         String userId = userDetails.getUsername();
         int role = userService.getRoleByUserName(userId);

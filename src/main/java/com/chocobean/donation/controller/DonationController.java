@@ -70,7 +70,6 @@ public class DonationController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("categories") String categoriesJson
     ) {
-        if (userDetails == null) return ResponseEntity.status(401).body("UNAUTHORIZED");
 
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
@@ -112,9 +111,6 @@ public class DonationController {
     public int getRole(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return 3;
-        }
 
         String userName = userDetails.getUsername();
         return userService.getRoleByUserName(userName);
@@ -124,9 +120,6 @@ public class DonationController {
     public ResponseEntity<?> getDonationState(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
         List<DonationState> donationState = donationService.getDonationState();
@@ -143,9 +136,6 @@ public class DonationController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("donationNo") Long no
     ) {
-        if (userDetails == null) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
         String userName = userDetails.getUsername();
         int role = userService.getRoleByUserName(userName);
 
