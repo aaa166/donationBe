@@ -21,9 +21,12 @@ spring:
 #    password: 1234
 #    driver-class-name: com.mysql.cj.jdbc.Driver
     # PostgreSQL
-    url: jdbc:postgresql://localhost:5432/chocobean
-    username: postgres
-    password: 1234
+#    url: jdbc:postgresql://localhost:5432/chocobean
+#    username: postgres
+#    password: 1234
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/chocobean}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -78,9 +81,12 @@ spring:
             user-name-attribute: id
 
   redis:
-    host: localhost
-    port: 6379
+#    host: localhost
+#    port: 6379
 #    password: foobared
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
 
   mail:
     host: smtp.gmail.com
