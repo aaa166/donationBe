@@ -2,7 +2,7 @@ server:
   port: 8081
 
 jwt:
-  secret: 'ChocobeanDonationProjectSecretKeyForJWT20251017ThisIsVerySecure'
+  secret: ${JWT_SECRET}
   expiration: 86400000
   access: 900000
   refresh: 1209600000
@@ -23,7 +23,7 @@ spring:
     # PostgreSQL
     url: jdbc:postgresql://localhost:5432/chocobean
     username: postgres
-    password: 1234
+    password: ${DB_PASSWORD:1234}
 #    url: ${DB_URL:jdbc:postgresql://localhost:5432/chocobean}
 #    username: ${DB_USERNAME:postgres}
 #    password: ${DB_PASSWORD:1234}
@@ -44,15 +44,15 @@ spring:
       client:
         registration:
           naver:
-            client-id: 6yT3JbgVTBaZq6eqSWOx
-            client-secret: WNqpYuqkqd
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             scope: "name,email,profile_image"
 
           kakao:
-            client-id: 53f563574a319fe055fe74d7c9382c8c
-            client-secret: blh8Pbp6AnFqpon4BVvtST4Mf9niRvsP
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post

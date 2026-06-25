@@ -6,6 +6,7 @@ import com.chocobean.donation.dto.ReportState;
 import com.chocobean.donation.service.ReportService;
 import com.chocobean.donation.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -50,7 +52,7 @@ public class ReportController {
             @RequestParam("userNo") Long userNo
     ) {
         List<ReportHistory> reportHistories = reportService.findReportHistory(userNo);
-        System.out.println(reportHistories);
+        log.info("reportHistories: {}", reportHistories);
 
         return ResponseEntity.ok(reportHistories);
     }
