@@ -3,6 +3,7 @@ package com.chocobean.donation.service;
 import com.chocobean.donation.repository.UserRepository;
 import com.chocobean.donation.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -22,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> {
-                    System.out.println("에러: DB에서 " + userId + " 사용자를 찾을 수 없습니다.");
+                    log.error("에러: DB에서 {} 사용자를 찾을 수 없습니다.", userId);
                     return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId);
                 });
 

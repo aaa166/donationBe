@@ -7,6 +7,7 @@ import com.chocobean.donation.entity.User;
 import com.chocobean.donation.repository.PaymentRepository;
 import com.chocobean.donation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -162,8 +164,8 @@ public class UserService {
     }
     @Transactional
     public boolean duplicateIdCheck(String userId) {
-        System.out.println(userId);
-        System.out.println(userRepository.countByUserId(userId));
+        log.info("duplicateIdCheck userId: {}", userId);
+        log.info("countByUserId: {}", userRepository.countByUserId(userId));
         return userRepository.countByUserId(userId) == 0;
     }
     @Transactional
